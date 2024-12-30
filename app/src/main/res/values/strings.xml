@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">MaiCar</string>
+    <string name="title_fuel">Fuel</string>
+    <string name="title_maintenance">Maintenance</string>
+    <string name="dialog_date">Date:</string>
+    <string name="dialog_km">Current Km:</string>
+    <string name="dialog_liters">Added Liters:</string>
+    <string name="dialog_full_tank">Full Tank?</string>
+    <string name="dialog_price">Total Price:</string>
+    <string name="desc_km">km</string>
+    <string name="desc_liters">liters</string>
+    <string name="desc_price">price</string>
+    <string name="desc_mpg">mpg</string>
+</resources>

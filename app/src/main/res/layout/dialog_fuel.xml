@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/editTextDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints=""
+        android:inputType="date"
+        android:hint="@string/dialog_date"
+        android:focusable="false"
+        android:clickable="true"
+        android:layout_marginTop="16dp" />
+
+    <EditText
+        android:id="@+id/editTextKm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints=""
+        android:hint="@string/dialog_km"
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/editTextLiters"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints=""
+        android:hint="@string/dialog_liters"
+        android:inputType="numberDecimal" />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/editToggleFull"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints=""
+        android:text="@string/dialog_full_tank"
+        android:layout_marginTop="16dp" />
+
+    <EditText
+        android:id="@+id/editTextPrice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints=""
+        android:hint="@string/dialog_price"
+        android:inputType="numberDecimal" />
+
+</LinearLayout>

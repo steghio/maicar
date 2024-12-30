@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_fuel"
+        android:icon="@drawable/ic_fuel_24dp"
+        android:title="@string/title_fuel" />
+
+    <item
+        android:id="@+id/navigation_maintenance"
+        android:icon="@drawable/ic_maintenance_24dp"
+        android:title="@string/title_maintenance" />
+
+</menu>
