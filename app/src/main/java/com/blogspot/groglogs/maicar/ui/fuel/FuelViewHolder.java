@@ -1,6 +1,7 @@
 package com.blogspot.groglogs.maicar.ui.fuel;
 
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,7 +21,10 @@ public class FuelViewHolder extends RecyclerView.ViewHolder {
     TextView dateTextView;
     ImageView mpgIconImageView;
     TextView mpgTextView;
+    ImageButton editButton;
+    ImageButton deleteButton;
 
+    //todo gridlayout column weights for proper item positioning
     public FuelViewHolder(@NonNull View itemView) {
         super(itemView);
         kmIconImageView = itemView.findViewById(R.id.kmIconImageView);
@@ -33,5 +37,7 @@ public class FuelViewHolder extends RecyclerView.ViewHolder {
         dateTextView = itemView.findViewById(R.id.dateTextView);
         mpgIconImageView = itemView.findViewById(R.id.mpgIconImageView);
         mpgTextView = itemView.findViewById(R.id.mpgTextView);
+        editButton = itemView.findViewById(R.id.editButton);
+        deleteButton = itemView.findViewById(R.id.deleteButton);
     }
 }

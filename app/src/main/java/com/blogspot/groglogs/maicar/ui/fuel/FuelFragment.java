@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.EditText;
-import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -29,8 +28,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.Calendar;
 import java.util.List;
 
@@ -107,14 +104,14 @@ public class FuelFragment extends Fragment {
                     // Action to be performed when the FAB is clicked
                     Toast.makeText(view.getContext(), "FAB clicked!", Toast.LENGTH_SHORT).show();
 
-                    showFormDialog();
+                    showInsertDialog();
                 }
             });
         }
     }
 
     // Method to show the form dialog to collect user input
-    private void showFormDialog() {
+    private void showInsertDialog() {
         // Create a custom view for the dialog
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_fuel, null);
 

@@ -11,4 +11,6 @@
     <string name="desc_liters">liters</string>
     <string name="desc_price">price</string>
     <string name="desc_mpg">mpg</string>
+    <string name="desc_edit">edit</string>
+    <string name="desc_delete">delete</string>
 </resources>
