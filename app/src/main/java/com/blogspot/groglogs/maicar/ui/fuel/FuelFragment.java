@@ -33,10 +33,7 @@ import java.util.Calendar;
 import java.util.List;
 
 public class FuelFragment extends Fragment {
-
-    private RecyclerView recyclerView;
     private FuelAdapter adapter;
-    private AppDatabase db;
 
     @Nullable
     @Override
@@ -45,19 +42,16 @@ public class FuelFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_fuel, container, false);
 
         // Initialize RecyclerView
-        recyclerView = view.findViewById(R.id.recyclerView);
+        RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
 
-        // Initialize Adapter with sample data
-        adapter = new FuelAdapter();
+        // Initialize Adapter
+        adapter = new FuelAdapter(getActivity().getApplication());
         recyclerView.setAdapter(adapter);
 
         // Add a DividerItemDecoration
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(dividerItemDecoration);
-
-        db = Room.databaseBuilder(view.getContext(),
-                AppDatabase.class, "maicardb").build();
 
         loadData();
 
@@ -227,37 +221,10 @@ public class FuelFragment extends Fragment {
     }
 
     private void saveData(FuelItem f){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                db.fuelDao().insert(f);
-
-                // Update the UI on the main thread
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        adapter.addItem(f);  // Update the adapter with the new list
-                    }
-                });
-            }
-        }).start();
+        adapter.saveEntity(f);
     }
 
     private void loadData() {
-        // Use AsyncTask or background thread to load data from the database
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                List<FuelItem> items = db.fuelDao().getAllItems();
-
-                // Update the UI on the main thread
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        adapter.addItems(items);  // Update the adapter with the new list
-                    }
-                });
-            }
-        }).start();
+        adapter.loadAllItems();
     }
 }

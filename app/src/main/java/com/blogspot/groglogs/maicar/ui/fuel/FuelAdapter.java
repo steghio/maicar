@@ -1,6 +1,7 @@
 package com.blogspot.groglogs.maicar.ui.fuel;
 
 import android.app.AlertDialog;
+import android.app.Application;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,7 @@ import com.blogspot.groglogs.maicar.R;
 import com.blogspot.groglogs.maicar.model.view.FuelViewItem;
 import com.blogspot.groglogs.maicar.model.entity.FuelItem;
 import com.blogspot.groglogs.maicar.storage.db.AppDatabase;
+import com.blogspot.groglogs.maicar.storage.db.repository.FuelRepository;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.text.DecimalFormat;
@@ -24,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> {
 
@@ -32,11 +35,12 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> {
     private List<FuelViewItem> items;
     //key = item position, value = mpg for item (if full tank)
     private Map<Integer,Double> mpgMap;
-    private AppDatabase db;
+    private FuelRepository fuelRepository;
 
-    public FuelAdapter() {
+    public FuelAdapter(Application application) {
         this.items = new ArrayList<>();
         this.mpgMap = new HashMap<>();
+        fuelRepository = new FuelRepository(application);
     }
 
     @NonNull
@@ -45,14 +49,11 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_fuel, parent, false);
 
-        //todo how to properly get db from fragment and call delete/update from there
-        db = Room.databaseBuilder(view.getContext(),
-                AppDatabase.class, "maicardb").allowMainThreadQueries().build();
-
         return new FuelViewHolder(view);
     }
 
     //todo use strings with placeholders
+    //todo mpg calc logic in load call
     @Override
     public void onBindViewHolder(@NonNull FuelViewHolder holder, int position) {
         FuelViewItem item = items.get(position);
@@ -138,23 +139,41 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> {
         return items.size();
     }
 
+    public void loadAllItems(){
+        List<FuelItem> entities = new ArrayList<>();
+
+        //todo handle properly
+        try {
+            entities = fuelRepository.getAllItemsSortedDesc();
+        } catch (ExecutionException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        addEntities(entities);
+    }
+
     public void deleteItem(FuelViewItem item, int position){
-        db.fuelDao().delete(item.getId());
+        fuelRepository.delete(item.getId());
 
         items.remove(position);
 
         notifyItemRemoved(position);
     }
 
-    public void addItems(List<FuelItem> items) {
-        for(FuelItem f : items){
-            addItem(f);
+    public void addEntities(List<FuelItem> entities) {
+        for(FuelItem e : entities){
+            addEntity(e);
         }
     }
 
-    public void addItem(FuelItem f) {
+    public void saveEntity(FuelItem entity) {
+        fuelRepository.insert(entity);
+        addEntity(entity);
+    }
+
+    public void addEntity(FuelItem entity) {
         //todo add mapper
-        items.add(new FuelViewItem(f.getId(), f.getKm(), f.getLiters(), f.getPrice(), f.isFull(), f.getDate()));
+        items.add(new FuelViewItem(entity.getId(), entity.getKm(), entity.getLiters(), entity.getPrice(), entity.isFull(), entity.getDate()));
         //todo refresh UI correctly eg if item inserted in middle of list and not top
         //!!!!IMPORTANT MUST refresh otherwise id from DB is NOT returned in UI!!!!
         //todo also refresh correctly after insert should appear on top
