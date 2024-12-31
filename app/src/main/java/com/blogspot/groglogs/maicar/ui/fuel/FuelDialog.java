@@ -9,6 +9,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.blogspot.groglogs.maicar.R;
+import com.blogspot.groglogs.maicar.model.entity.FuelItem;
 import com.blogspot.groglogs.maicar.model.view.FuelViewItem;
 import com.blogspot.groglogs.maicar.util.DateUtils;
 import com.google.android.material.switchmaterial.SwitchMaterial;
@@ -27,28 +28,55 @@ public class FuelDialog {
     private EditText editTextPriceLiter;
     private SwitchMaterial editToggleFull;
     private EditText editTextDate;
+    private FuelAdapter fuelAdapter;
 
-    public FuelDialog(Context context){
+    public FuelDialog(Context context, FuelAdapter fuelAdapter){
         LayoutInflater layoutInflater = LayoutInflater.from(context);
-        // Create a custom view for the dialog
+
         //todo do not pass null for root
         this.dialogView = layoutInflater.inflate(R.layout.dialog_fuel, null);
 
-        // Get references to the EditTexts in the custom layout
         this.editTextKm = dialogView.findViewById(R.id.editTextKm);
         this.editTextLiters = dialogView.findViewById(R.id.editTextLiters);
         this.editTextPrice = dialogView.findViewById(R.id.editTextPrice);
         this.editTextPriceLiter = dialogView.findViewById(R.id.editTextPriceLiter);
         this.editToggleFull = dialogView.findViewById(R.id.editToggleFull);
         this.editTextDate = dialogView.findViewById(R.id.editTextDate);
+
+        this.fuelAdapter = fuelAdapter;
+    }
+
+    public void fillDialog(Context context, FuelViewItem f){
+        this.editTextKm.setText(String.valueOf(f.getKm()));
+        this.editTextLiters.setText(String.valueOf(f.getLiters()));
+        this.editTextPrice.setText(String.valueOf(f.getPrice()));
+        this.editToggleFull.setChecked(f.isFull());
+        this.addDatePicker(context, f.getDate());
     }
 
     public int getKm(){
         return Integer.parseInt(this.editTextKm.getText().toString());
     }
 
+    public double getLiters(){
+        return Double.parseDouble(this.editTextLiters.getText().toString());
+    }
+
+    public double getPrice(){
+        return Double.parseDouble(this.editTextPrice.getText().toString());
+    }
+
+    public double getPriceLiter(){
+        return Double.parseDouble(this.editTextPriceLiter.getText().toString());
+    }
+
+    public LocalDate getDate(){
+        String[] dateParts = this.editTextDate.getText().toString().split("-");
+        return LocalDate.of(Integer.parseInt(dateParts[0]), Integer.parseInt(dateParts[1]), Integer.parseInt(dateParts[2]));
+    }
+
     /**
-     *
+     * month in date picker is 0-based so we need to handle +/- 1 from LocalDate
      * @param context
      * @param date default date to display
      */
@@ -67,6 +95,74 @@ public class FuelDialog {
             );
             datePickerDialog.show();
         });
+    }
+
+    public View.OnClickListener getSubmitButtonWithValidation(AlertDialog d, boolean isUpdate){
+        return v -> {
+            int km = -1;
+            double liters = -1.0;
+            double price = -1.0;
+            double priceLiter = -1.0;
+            boolean full = this.editToggleFull.isChecked();
+            LocalDate date = null;
+
+            boolean isError = false;
+
+            try {
+                km = this.getKm();
+            } catch (NumberFormatException e) {
+                this.editTextKm.setError("Please enter a positive value for Km");
+                isError = true;
+            }
+
+            try {
+                liters = this.getLiters();
+            } catch (NumberFormatException e) {
+                this.editTextLiters.setError("Please enter a positive value for Liters");
+                isError = true;
+            }
+
+            try {
+                price = this.getPrice();
+                priceLiter = this.getPriceLiter();
+            } catch (NumberFormatException e) {
+                //ignore, is handled later
+            }
+
+            if((price >= 0 && priceLiter >= 0) || (price < 0 && priceLiter < 0)){
+                this.editTextPrice.setError("Please enter a positive value for either Price or Price per Liter, not both");
+                this.editTextPriceLiter.setError("Please enter a positive value for either Price or Price per Liter, not both");
+                isError = true;
+            }
+
+            if(!isError && priceLiter >= 0){
+                price = liters * priceLiter;
+            }
+
+            try{
+                date = this.getDate();
+            } catch (Exception e){
+                this.editTextDate.setError("Invalid Date");
+                isError = true;
+            }
+
+            if(!isError){
+                if(isUpdate){
+                    /*FuelItem i = new FuelItem(km, liters, price, full, date);
+                    todo get id from initial row i.setId(); maybe store in hidden field in form
+                    fuelAdapter.updateEntity(i);*/
+                    Toast.makeText(d.getContext(), "UPDATE", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    FuelItem i = new FuelItem(km, liters, price, full, date);
+                    fuelAdapter.saveEntity(i);
+
+                    Toast.makeText(d.getContext(), "Refuel added", Toast.LENGTH_SHORT).show();
+                }
+
+                d.dismiss();
+            }
+        };
     }
 
     public void showUpdateDialog(Context context, FuelViewItem f) {
