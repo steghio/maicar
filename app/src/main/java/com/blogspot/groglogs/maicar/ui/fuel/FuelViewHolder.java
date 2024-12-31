@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.blogspot.groglogs.maicar.R;
 
+//todo lombok and access via getter instead of field
 public class FuelViewHolder extends RecyclerView.ViewHolder {
     ImageView kmIconImageView;
     TextView kmTextView;

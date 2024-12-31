@@ -22,7 +22,7 @@ import androidx.room.Room;
 
 import com.blogspot.groglogs.maicar.R;
 import com.blogspot.groglogs.maicar.model.entity.FuelItem;
-import com.blogspot.groglogs.maicar.storage.db.dao.AppDatabase;
+import com.blogspot.groglogs.maicar.storage.db.AppDatabase;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
