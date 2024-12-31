@@ -41,6 +41,14 @@
         android:layout_marginTop="16dp" />
 
     <EditText
+        android:id="@+id/editTextPriceLiter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints=""
+        android:hint="@string/dialog_price_liter"
+        android:inputType="numberDecimal" />
+
+    <EditText
         android:id="@+id/editTextPrice"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

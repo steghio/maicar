@@ -10,35 +10,37 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.blogspot.groglogs.maicar.R;
 
-//todo lombok and access via getter instead of field
+import lombok.Getter;
+
+@Getter
 public class FuelViewHolder extends RecyclerView.ViewHolder {
-    ImageView kmIconImageView;
-    TextView kmTextView;
-    ImageView literIconImageView;
-    TextView literTextView;
-    ImageView priceIconImageView;
-    TextView priceTextView;
-    TextView priceLiterTextView;
-    TextView dateTextView;
-    ImageView mpgIconImageView;
-    TextView mpgTextView;
-    ImageButton editButton;
-    ImageButton deleteButton;
+    private final ImageView kmIconImageView;
+    private final TextView kmTextView;
+    private final ImageView literIconImageView;
+    private final TextView literTextView;
+    private final ImageView priceIconImageView;
+    private final TextView priceTextView;
+    private final TextView priceLiterTextView;
+    private final TextView dateTextView;
+    private final ImageView mpgIconImageView;
+    private final TextView mpgTextView;
+    private final ImageButton editButton;
+    private final ImageButton deleteButton;
 
     //todo gridlayout column weights for proper item positioning
     public FuelViewHolder(@NonNull View itemView) {
         super(itemView);
-        kmIconImageView = itemView.findViewById(R.id.kmIconImageView);
-        kmTextView = itemView.findViewById(R.id.kmTextView);
-        literIconImageView = itemView.findViewById(R.id.literIconImageView);
-        literTextView = itemView.findViewById(R.id.literTextView);
-        priceIconImageView = itemView.findViewById(R.id.priceIconImageView);
-        priceTextView = itemView.findViewById(R.id.priceTextView);
-        priceLiterTextView = itemView.findViewById(R.id.priceLiterTextView);
-        dateTextView = itemView.findViewById(R.id.dateTextView);
-        mpgIconImageView = itemView.findViewById(R.id.mpgIconImageView);
-        mpgTextView = itemView.findViewById(R.id.mpgTextView);
-        editButton = itemView.findViewById(R.id.editButton);
-        deleteButton = itemView.findViewById(R.id.deleteButton);
+        this.kmIconImageView = itemView.findViewById(R.id.kmIconImageView);
+        this.kmTextView = itemView.findViewById(R.id.kmTextView);
+        this.literIconImageView = itemView.findViewById(R.id.literIconImageView);
+        this.literTextView = itemView.findViewById(R.id.literTextView);
+        this.priceIconImageView = itemView.findViewById(R.id.priceIconImageView);
+        this.priceTextView = itemView.findViewById(R.id.priceTextView);
+        this.priceLiterTextView = itemView.findViewById(R.id.priceLiterTextView);
+        this.dateTextView = itemView.findViewById(R.id.dateTextView);
+        this.mpgIconImageView = itemView.findViewById(R.id.mpgIconImageView);
+        this.mpgTextView = itemView.findViewById(R.id.mpgTextView);
+        this.editButton = itemView.findViewById(R.id.editButton);
+        this.deleteButton = itemView.findViewById(R.id.deleteButton);
     }
 }

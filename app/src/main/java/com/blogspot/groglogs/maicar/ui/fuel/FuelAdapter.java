@@ -56,14 +56,14 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull FuelViewHolder holder, int position) {
         FuelViewItem item = items.get(position);
-        holder.kmIconImageView.setImageResource(item.getKmIconResId());
-        holder.kmTextView.setText(item.getKm() + " km");
-        holder.literIconImageView.setImageResource(item.getFuelIconResId());
-        holder.literTextView.setText(item.getLiters() + " L");
-        holder.priceIconImageView.setImageResource(item.getPriceIconResId());
-        holder.priceTextView.setText(item.getPrice() + " €");
-        holder.priceLiterTextView.setText("€/L " + df4.format(item.getPricePerLiter()));
-        holder.dateTextView.setText(item.getDate().toString());
+        holder.getKmIconImageView().setImageResource(item.getKmIconResId());
+        holder.getKmTextView().setText(item.getKm() + " km");
+        holder.getLiterIconImageView().setImageResource(item.getFuelIconResId());
+        holder.getLiterTextView().setText(item.getLiters() + " L");
+        holder.getPriceIconImageView().setImageResource(item.getPriceIconResId());
+        holder.getPriceTextView().setText(item.getPrice() + " €");
+        holder.getPriceLiterTextView().setText("€/L " + df4.format(item.getPricePerLiter()));
+        holder.getDateTextView().setText(item.getDate().toString());
 
         double totLiters = item.getLiters();
         int currKm = item.getKm();
@@ -88,20 +88,23 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> {
             mpgMap.put(position, mpg);
             Double prevMpg = mpgMap.get(idx);
 
+            int img = -1;
+
             if(prevMpg == null || Math.abs(prevMpg - mpg) == 0.0){
-                holder.mpgIconImageView.setImageResource(R.drawable.ic_chart_flat_24dp);
+                img = R.drawable.ic_chart_flat_24dp;
             }
             else if(prevMpg - mpg < 0.1){
-                holder.mpgIconImageView.setImageResource(R.drawable.ic_chart_up_24dp);
+                img = R.drawable.ic_chart_up_24dp;
             }
             else{
-                holder.mpgIconImageView.setImageResource(R.drawable.ic_chart_down_24dp);
+                img = R.drawable.ic_chart_down_24dp;
             }
 
-            holder.mpgTextView.setText(df1.format(mpg));
+            holder.getMpgIconImageView().setImageResource(img);
+            holder.getMpgTextView().setText(df1.format(mpg));
         }
 
-        ImageButton editButton = holder.editButton;
+        ImageButton editButton = holder.getEditButton();
 
         if(editButton != null){
             editButton.setOnClickListener(new View.OnClickListener() {
@@ -115,7 +118,7 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> {
             });
         }
 
-        ImageButton deleteButton = holder.deleteButton;
+        ImageButton deleteButton = holder.getDeleteButton();
 
         if(deleteButton != null){
             deleteButton.setOnClickListener(new View.OnClickListener() {

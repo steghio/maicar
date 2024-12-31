@@ -23,6 +23,7 @@ import androidx.room.Room;
 import com.blogspot.groglogs.maicar.R;
 import com.blogspot.groglogs.maicar.model.entity.FuelItem;
 import com.blogspot.groglogs.maicar.storage.db.AppDatabase;
+import com.blogspot.groglogs.maicar.util.StringUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
@@ -119,17 +120,21 @@ public class FuelFragment extends Fragment {
         final EditText editTextKm = dialogView.findViewById(R.id.editTextKm);
         final EditText editTextLiters = dialogView.findViewById(R.id.editTextLiters);
         final EditText editTextPrice = dialogView.findViewById(R.id.editTextPrice);
+        final EditText editTextPriceLiter = dialogView.findViewById(R.id.editTextPriceLiter);
         final SwitchMaterial editToggleFull = dialogView.findViewById(R.id.editToggleFull);
         final EditText editTextDate = dialogView.findViewById(R.id.editTextDate);
 
+        //today
+        final Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        String currentDate = day + "/" + (month + 1) + "/" + year;
+        editTextDate.setText(currentDate);
+
         // Handle DatePickerDialog for the date field
         editTextDate.setOnClickListener(v -> {
-            // Get the current date
-            final Calendar calendar = Calendar.getInstance();
-            int year = calendar.get(Calendar.YEAR);
-            int month = calendar.get(Calendar.MONTH);
-            int day = calendar.get(Calendar.DAY_OF_MONTH);
-
             // Show the DatePickerDialog
             DatePickerDialog datePickerDialog = new DatePickerDialog(
                     getContext(),
@@ -145,6 +150,8 @@ public class FuelFragment extends Fragment {
             datePickerDialog.show();
         });
 
+        //todo make error message block ui but not close dialog, use textwatcher or similar and show red field + message instead of toast
+
         // Set up the dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
@@ -153,10 +160,10 @@ public class FuelFragment extends Fragment {
                 .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        //todo allow price/l or price input and calculate the other, only allow one per input
                         int km = -1;
                         double liters = -1.0;
                         double price = -1.0;
+                        double priceLiter = -1.0;
                         boolean full = editToggleFull.isChecked();
                         LocalDate date = null;
 
@@ -175,10 +182,30 @@ public class FuelFragment extends Fragment {
                         }
 
                         try {
-                            price = Double.parseDouble(editTextPrice.getText().toString());
+                            if(!StringUtils.isBlank(editTextPrice.getText().toString())) {
+                                price = Double.parseDouble(editTextPrice.getText().toString());
+                            }
                         } catch (NumberFormatException e) {
                             Toast.makeText(getContext(), "Please enter a positive value for Price", Toast.LENGTH_SHORT).show();
                             return;
+                        }
+
+                        try {
+                            if(!StringUtils.isBlank(editTextPriceLiter.getText().toString())) {
+                                priceLiter = Double.parseDouble(editTextPriceLiter.getText().toString());
+                            }
+                        } catch (NumberFormatException e) {
+                            Toast.makeText(getContext(), "Please enter a positive value for Price per Liter", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        if(price >= 0 && priceLiter >= 0){
+                            Toast.makeText(getContext(), "Please enter either Price or Price per Liter, not both", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        if(priceLiter >= 0){
+                            price = liters * priceLiter;
                         }
 
                         try{
