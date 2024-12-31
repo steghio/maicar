@@ -2,7 +2,9 @@ package com.blogspot.groglogs.maicar.ui.fuel;
 
 import android.app.AlertDialog;
 import android.app.Application;
+import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,35 +14,38 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Room;
 
 import com.blogspot.groglogs.maicar.R;
 import com.blogspot.groglogs.maicar.model.view.FuelViewItem;
 import com.blogspot.groglogs.maicar.model.entity.FuelItem;
-import com.blogspot.groglogs.maicar.storage.db.AppDatabase;
 import com.blogspot.groglogs.maicar.storage.db.repository.FuelRepository;
+import com.blogspot.groglogs.maicar.util.DateUtils;
+import com.blogspot.groglogs.maicar.util.StringUtils;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> {
-
     private DecimalFormat df4 = new DecimalFormat("#.####");
     private DecimalFormat df1 = new DecimalFormat("#.#");
+
     private List<FuelViewItem> items;
     //key = item position, value = mpg for item (if full tank)
     private Map<Integer,Double> mpgMap;
+
     private FuelRepository fuelRepository;
 
     public FuelAdapter(Application application) {
         this.items = new ArrayList<>();
         this.mpgMap = new HashMap<>();
-        fuelRepository = new FuelRepository(application);
+        this.fuelRepository = new FuelRepository(application);
     }
 
     @NonNull
@@ -178,6 +183,87 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> {
         //!!!!IMPORTANT MUST refresh otherwise id from DB is NOT returned in UI!!!!
         //todo also refresh correctly after insert should appear on top
         notifyItemInserted(items.size() - 1);
+    }
+
+    //todo make error message block ui but not close dialog, use textwatcher or similar and show red field + message instead of toast
+    public void showInsertDialog(Context context) {
+
+        FuelDialog fuelDialog = new FuelDialog(context);
+
+        fuelDialog.addDatePicker(context, LocalDate.now());
+
+        // Set up the dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+        builder.setTitle("Enter Refuel Details")
+                .setView(fuelDialog.getDialogView()) // Set the custom layout in the dialog
+                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        int km = -1;
+                        double liters = -1.0;
+                        double price = -1.0;
+                        double priceLiter = -1.0;
+                        boolean full = fuelDialog.getEditToggleFull().isChecked();
+                        LocalDate date = null;
+
+                        try {
+                            km = fuelDialog.getKm();
+                        } catch (NumberFormatException e) {
+                            Toast.makeText(context, "Please enter a positive value for Km", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        try {
+                            liters = Double.parseDouble(fuelDialog.getEditTextLiters().getText().toString());
+                        } catch (NumberFormatException e) {
+                            Toast.makeText(context, "Please enter a positive value for Liters", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        try {
+                            if(!StringUtils.isBlank(fuelDialog.getEditTextPrice().getText().toString())) {
+                                price = Double.parseDouble(fuelDialog.getEditTextPrice().getText().toString());
+                            }
+                        } catch (NumberFormatException e) {
+                            Toast.makeText(context, "Please enter a positive value for Price", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        try {
+                            if(!StringUtils.isBlank(fuelDialog.getEditTextPriceLiter().getText().toString())) {
+                                priceLiter = Double.parseDouble(fuelDialog.getEditTextPriceLiter().getText().toString());
+                            }
+                        } catch (NumberFormatException e) {
+                            Toast.makeText(context, "Please enter a positive value for Price per Liter", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        if(price >= 0 && priceLiter >= 0){
+                            Toast.makeText(context, "Please enter either Price or Price per Liter, not both", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        if(priceLiter >= 0){
+                            price = liters * priceLiter;
+                        }
+
+                        try{
+                            String[] dateParts = fuelDialog.getEditTextDate().getText().toString().split("-");
+                            date = LocalDate.of(Integer.parseInt(dateParts[0]), Integer.parseInt(dateParts[1]), Integer.parseInt(dateParts[2]));
+                        } catch (Exception e){
+                            Toast.makeText(context, "Invalid Date", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        FuelItem i = new FuelItem(km, liters, price, full, date);
+                        saveEntity(i);
+
+                        Toast.makeText(context, "Refuel added", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Cancel", null) // Do nothing on cancel
+                .show();
     }
 
     //todo use same form and checks and all from fragment, just change prefill logic and confirm button text
