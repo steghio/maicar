@@ -34,4 +34,8 @@ public class MaintenanceViewItem {
     public String getTypeText(){
         return this.maintenanceType.toString();
     }
+
+    public MaintenanceTypeEnum getMaintenanceType(){
+        return this.maintenanceType == null ? MaintenanceTypeEnum.OTHER : this.maintenanceType;
+    }
 }

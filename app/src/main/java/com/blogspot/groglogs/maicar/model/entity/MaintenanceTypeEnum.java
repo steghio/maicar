@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 import com.blogspot.groglogs.maicar.R;
 
 public enum MaintenanceTypeEnum {
-    TYRE,
+    TYRES,
     CHECK,
     OIL,
     BATTERY,
@@ -17,7 +17,7 @@ public enum MaintenanceTypeEnum {
             case OIL -> {
                 return R.drawable.ic_oil_24dp;
             }
-            case TYRE -> {
+            case TYRES -> {
                 return R.drawable.ic_tyre_24dp;
             }
             case CHECK -> {
@@ -42,7 +42,7 @@ public enum MaintenanceTypeEnum {
             case OIL -> {
                 return "Oil";
             }
-            case TYRE -> {
+            case TYRES -> {
                 return "Tyres";
             }
             case CHECK -> {
@@ -62,5 +62,28 @@ public enum MaintenanceTypeEnum {
 
     public int getSelection(){
         return this.ordinal();
+    }
+
+    public static MaintenanceTypeEnum getValueFromLabel(String label){
+        switch (label){
+            case "Oil" -> {
+                return MaintenanceTypeEnum.OIL;
+            }
+            case "Tyres" -> {
+                return MaintenanceTypeEnum.TYRES;
+            }
+            case "Check" -> {
+                return MaintenanceTypeEnum.CHECK;
+            }
+            case "Battery" -> {
+                return MaintenanceTypeEnum.BATTERY;
+            }
+            case "Wipers" -> {
+                return MaintenanceTypeEnum.WIPERS;
+            }
+            default -> {
+                return MaintenanceTypeEnum.OTHER;
+            }
+        }
     }
 }

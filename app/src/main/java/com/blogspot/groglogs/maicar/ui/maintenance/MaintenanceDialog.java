@@ -56,6 +56,7 @@ public class MaintenanceDialog {
 
         this.editTextKm.setText(String.valueOf(f.getKm()));
         this.editTextPrice.setText(String.valueOf(f.getPrice()));
+        //todo update does not show any value and does not select the current either
         this.editTextType.setSelection(f.getMaintenanceType().getSelection());
         this.editTextNotes.setText(String.valueOf(f.getNotes()));
         this.editTextPrice.setText(String.valueOf(f.getPrice()));
@@ -80,17 +81,8 @@ public class MaintenanceDialog {
         return this.editTextNotes.getText().toString();
     }
 
-    //todo we display a label but work with values so adapt everything to work properly
     public MaintenanceTypeEnum getMaintenanceType(){
-        MaintenanceTypeEnum maintenanceTypeEnum = MaintenanceTypeEnum.OTHER;
-
-        try{
-            maintenanceTypeEnum = MaintenanceTypeEnum.valueOf(this.editTextType.getSelectedItem().toString());
-        } catch (IllegalArgumentException e) {
-            //ignore
-        }
-
-        return maintenanceTypeEnum;
+        return MaintenanceTypeEnum.getValueFromLabel(this.editTextType.getSelectedItem().toString());
     }
 
     /**
