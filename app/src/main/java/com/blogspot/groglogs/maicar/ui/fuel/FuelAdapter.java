@@ -16,22 +16,17 @@ import com.blogspot.groglogs.maicar.R;
 import com.blogspot.groglogs.maicar.model.view.FuelViewItem;
 import com.blogspot.groglogs.maicar.model.entity.FuelItem;
 import com.blogspot.groglogs.maicar.storage.db.repository.FuelRepository;
+import com.blogspot.groglogs.maicar.util.StringUtils;
 
-import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> {
-    private final DecimalFormat df4 = new DecimalFormat("#.####");
-    private final DecimalFormat df1 = new DecimalFormat("#.#");
-
     private List<FuelViewItem> items;
-    //todo key = item id
     //key = item position, value = mpg for item (if full tank)
     private Map<Integer,Double> mpgMap;
 
@@ -63,7 +58,7 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> {
         holder.getLiterTextView().setText(item.getLiters() + " L");
         holder.getPriceIconImageView().setImageResource(item.getPriceIconResId());
         holder.getPriceTextView().setText(item.getPrice() + " €");
-        holder.getPriceLiterTextView().setText("€/L " + df4.format(item.getPricePerLiter()));
+        holder.getPriceLiterTextView().setText("€/L " + StringUtils.decimal2String4Precision(item.getPricePerLiter()));
         holder.getDateTextView().setText(item.getDate().toString());
 
         //previous item in sorted desc list
@@ -97,7 +92,7 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> {
             }
 
             holder.getMpgIconImageView().setImageResource(img);
-            holder.getMpgTextView().setText(df1.format(mpg));
+            holder.getMpgTextView().setText(StringUtils.decimal2String1Precision(mpg));
         }
 
         ImageButton editButton = holder.getEditButton();
@@ -135,6 +130,7 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> {
     //load asc but display desc
     public void loadAllItems(){
         this.items = new ArrayList<>();
+        this.mpgMap = new HashMap<>();
 
         List<FuelItem> entities = new ArrayList<>();
 
@@ -175,8 +171,6 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> {
         for(int i = entities.size() - 1; i >= 0; i--){
             addEntity(entities.get(i));
         }
-
-        //addEntities(entities.stream().sorted(Collections.reverseOrder()).toList());
     }
 
     public void deleteItem(FuelViewItem item, int position){
@@ -185,12 +179,6 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> {
         items.remove(position);
 
         notifyItemRemoved(position);
-    }
-
-    public void addEntities(List<FuelItem> entities) {
-        for(FuelItem e : entities){
-            addEntity(e);
-        }
     }
 
     public void saveEntity(FuelItem entity) {
@@ -244,12 +232,11 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> {
     public void showUpdateDialog(Context context, FuelViewItem f, int position) {
         FuelDialog fuelDialog = new FuelDialog(context, this);
 
-        //todo when open dialog for update price should be kept and priceLiter should be removed so validation passes even when inverted
         fuelDialog.fillDialog(context, f, position);
 
         //prepare popup input
         AlertDialog dialog = new AlertDialog.Builder(context)
-                .setTitle("Enter Refuel Details")
+                .setTitle("Edit Refuel Details")
                 .setView(fuelDialog.getDialogView())
                 .setPositiveButton("Update", null)
                 .setNegativeButton("Cancel", null)

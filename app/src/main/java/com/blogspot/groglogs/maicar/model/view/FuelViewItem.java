@@ -15,7 +15,6 @@ public class FuelViewItem {
     private double price;
     private double pricePerLiter;
     private boolean full;
-
     private LocalDate date;
 
     public FuelViewItem(long id, int km, double liters, double price, boolean full, LocalDate date){
@@ -23,9 +22,12 @@ public class FuelViewItem {
         this.km = km;
         this.liters = liters;
         this.price = price;
-        this.pricePerLiter = this.price / this.liters;
         this.full = full;
         this.date = date;
+    }
+
+    public double getPricePerLiter(){
+        return this.liters > 0 ? this.price / this.liters : 0;
     }
 
     public int getKmIconResId(){

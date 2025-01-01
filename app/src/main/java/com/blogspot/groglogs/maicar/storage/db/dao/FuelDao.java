@@ -10,7 +10,6 @@ import com.blogspot.groglogs.maicar.model.entity.FuelItem;
 
 import java.util.List;
 
-//todo use repository everywhere to perform db operations
 @Dao
 public interface FuelDao {
 

@@ -8,6 +8,8 @@
     <string name="dialog_full_tank">Full Tank?</string>
     <string name="dialog_price">Total Price:</string>
     <string name="dialog_price_liter">Price per Liter:</string>
+    <string name="dialog_maintenance_type">Type:</string>
+    <string name="dialog_notes">Notes:</string>
     <string name="desc_km">km</string>
     <string name="desc_liters">liters</string>
     <string name="desc_price">price</string>
