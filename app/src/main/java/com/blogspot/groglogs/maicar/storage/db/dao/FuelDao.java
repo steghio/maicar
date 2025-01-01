@@ -32,7 +32,6 @@ public interface FuelDao {
     void update(FuelItem fuelItem);
 
     //todo what if 2 fuel in same day?
-    //todo order DESC but mpg calc uses asc...
     @Query("SELECT * FROM fuel ORDER BY date ASC")
-    List<FuelItem> getAllItemsSortedDesc();
+    List<FuelItem> getAllItemsByDateAsc();
 }

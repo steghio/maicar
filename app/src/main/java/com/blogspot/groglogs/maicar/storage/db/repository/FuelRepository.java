@@ -18,8 +18,8 @@ public class FuelRepository {
         fuelDao = db.fuelDao();
     }
 
-    public List<FuelItem> getAllItemsSortedDesc() throws ExecutionException, InterruptedException {
-        return AppDatabase.getDatabaseWriteExecutor().submit(() -> fuelDao.getAllItemsSortedDesc()).get();
+    public List<FuelItem> getAllItemsByDateAsc() throws ExecutionException, InterruptedException {
+        return AppDatabase.getDatabaseWriteExecutor().submit(() -> fuelDao.getAllItemsByDateAsc()).get();
     }
 
     public long insert(FuelItem entity) throws ExecutionException, InterruptedException {

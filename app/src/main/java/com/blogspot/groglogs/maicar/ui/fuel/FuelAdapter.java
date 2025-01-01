@@ -20,6 +20,7 @@ import com.blogspot.groglogs.maicar.storage.db.repository.FuelRepository;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,29 +66,24 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> {
         holder.getPriceLiterTextView().setText("€/L " + df4.format(item.getPricePerLiter()));
         holder.getDateTextView().setText(item.getDate().toString());
 
-        double totLiters = item.getLiters();
-        int currKm = item.getKm();
-        int prevKmFull = 0;
-        int idx = position - 1;
-        FuelViewItem prevItem;
+        //previous item in sorted desc list
+        int idx = items.size() - 1 - position - 1;
+
+        Double prevMpg = null;
 
         while(idx > 0){
-            prevItem = items.get(idx);
+            prevMpg = mpgMap.get(idx);
 
-            if(prevItem.isFull()){
-                prevKmFull = prevItem.getKm();
+            if(prevMpg != null){
                 break;
             }
 
-            totLiters += prevItem.getLiters();
             idx--;
         }
 
-        if(position > 0 && item.isFull()) {
-            double mpg = 100 * totLiters / (currKm - prevKmFull);
-            mpgMap.put(position, mpg);
-            Double prevMpg = mpgMap.get(idx);
+        Double mpg = mpgMap.get(items.size() - 1 - position);
 
+        if(position < items.size() && mpg != null) {
             int img = -1;
 
             if(prevMpg == null || Math.abs(prevMpg - mpg) == 0.0){
@@ -123,10 +119,9 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> {
             deleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    // Action to be performed when the FAB is clicked
-                    Toast.makeText(view.getContext(), "DELETE ID: " + item.getId() + " - POS: " + position, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(view.getContext(), "DELETE ID: " + item.getId() + " - POS: " + holder.getAdapterPosition(), Toast.LENGTH_SHORT).show();
 
-                    deleteItem(item, position);
+                    deleteItem(item, holder.getAdapterPosition());
                 }
             });
         }
@@ -137,6 +132,7 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> {
         return items.size();
     }
 
+    //load asc but display desc
     public void loadAllItems(){
         this.items = new ArrayList<>();
 
@@ -144,12 +140,43 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> {
 
         //todo handle properly
         try {
-            entities = fuelRepository.getAllItemsSortedDesc();
+            entities = fuelRepository.getAllItemsByDateAsc();
         } catch (ExecutionException | InterruptedException e) {
             throw new RuntimeException(e);
         }
 
-        addEntities(entities);
+        for(int i = 0; i < entities.size(); i++) {
+            FuelItem item = entities.get(i);
+
+            double totLiters = item.getLiters();
+            int currKm = item.getKm();
+            int prevKmFull = 0;
+            int idx = i - 1;
+            FuelItem prevItem;
+
+            while (idx > 0) {
+                prevItem = entities.get(idx);
+
+                if (prevItem.isFull()) {
+                    prevKmFull = prevItem.getKm();
+                    break;
+                }
+
+                totLiters += prevItem.getLiters();
+                idx--;
+            }
+
+            if (i > 0 && item.isFull()) {
+                double mpg = 100 * totLiters / (currKm - prevKmFull);
+                mpgMap.put(i, mpg);
+            }
+        }
+
+        for(int i = entities.size() - 1; i >= 0; i--){
+            addEntity(entities.get(i));
+        }
+
+        //addEntities(entities.stream().sorted(Collections.reverseOrder()).toList());
     }
 
     public void deleteItem(FuelViewItem item, int position){
