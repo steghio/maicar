@@ -15,7 +15,7 @@ import java.util.List;
 public interface FuelDao {
 
     @Insert
-    void insert(FuelItem fuelItem);
+    long insert(FuelItem fuelItem);
 
     @Transaction
     default void bulkInsert(List<FuelItem> fuelItems){

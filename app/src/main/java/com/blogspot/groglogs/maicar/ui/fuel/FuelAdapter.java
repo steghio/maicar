@@ -26,10 +26,11 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> {
-    private DecimalFormat df4 = new DecimalFormat("#.####");
-    private DecimalFormat df1 = new DecimalFormat("#.#");
+    private final DecimalFormat df4 = new DecimalFormat("#.####");
+    private final DecimalFormat df1 = new DecimalFormat("#.#");
 
     private List<FuelViewItem> items;
+    //todo key = item id
     //key = item position, value = mpg for item (if full tank)
     private Map<Integer,Double> mpgMap;
 
@@ -51,7 +52,7 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> {
     }
 
     //todo use strings with placeholders
-    //todo mpg calc logic in load call
+    //todo mpg calc logic in all calls (load, update, insert, delete)
     @Override
     public void onBindViewHolder(@NonNull FuelViewHolder holder, int position) {
         FuelViewItem item = items.get(position);
@@ -109,10 +110,9 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> {
             editButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    // Action to be performed when the FAB is clicked
-                    Toast.makeText(view.getContext(), "EDIT ID: " + item.getId() + " - POS: " + position, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(view.getContext(), "EDIT ID: " + item.getId() + " - POS: " + holder.getAdapterPosition(), Toast.LENGTH_SHORT).show();
 
-                    showUpdateDialog(view.getContext(), item);
+                    showUpdateDialog(view.getContext(), item, holder.getAdapterPosition());
                 }
             });
         }
@@ -138,6 +138,8 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> {
     }
 
     public void loadAllItems(){
+        this.items = new ArrayList<>();
+
         List<FuelItem> entities = new ArrayList<>();
 
         //todo handle properly
@@ -165,21 +167,28 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> {
     }
 
     public void saveEntity(FuelItem entity) {
-        fuelRepository.insert(entity);
+        //todo handle properly
+        try {
+            long id = fuelRepository.insert(entity);
+            entity.setId(id);
+        } catch (ExecutionException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         addEntity(entity);
     }
 
-    public void updateEntity(FuelItem entity){
+    public void updateEntity(FuelItem entity, int position){
         fuelRepository.update(entity);
-        //todo pass correct position notifyItemChanged(POSITION);
+
+        items.set(position, new FuelViewItem(entity.getId(), entity.getKm(), entity.getLiters(), entity.getPrice(), entity.isFull(), entity.getDate()));
+
+        notifyItemChanged(position);
     }
 
     public void addEntity(FuelItem entity) {
-        //todo add mapper
         items.add(new FuelViewItem(entity.getId(), entity.getKm(), entity.getLiters(), entity.getPrice(), entity.isFull(), entity.getDate()));
-        //todo refresh UI correctly eg if item inserted in middle of list and not top
-        //!!!!IMPORTANT MUST refresh otherwise id from DB is NOT returned in UI!!!!
-        //todo also refresh correctly after insert should appear on top
+        //todo refresh UI correctly and have item appear in sorted place
         notifyItemInserted(items.size() - 1);
     }
 
@@ -205,11 +214,11 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> {
         dialog.show();
     }
 
-    public void showUpdateDialog(Context context, FuelViewItem f) {
+    public void showUpdateDialog(Context context, FuelViewItem f, int position) {
         FuelDialog fuelDialog = new FuelDialog(context, this);
 
         //todo when open dialog for update price should be kept and priceLiter should be removed so validation passes even when inverted
-        fuelDialog.fillDialog(context, f);
+        fuelDialog.fillDialog(context, f, position);
 
         //prepare popup input
         AlertDialog dialog = new AlertDialog.Builder(context)

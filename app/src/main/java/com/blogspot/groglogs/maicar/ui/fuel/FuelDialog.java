@@ -22,6 +22,8 @@ import lombok.Getter;
 public class FuelDialog {
 
     private View dialogView;
+    private long id;
+    private int position;
     private EditText editTextKm;
     private EditText editTextLiters;
     private EditText editTextPrice;
@@ -31,6 +33,9 @@ public class FuelDialog {
     private FuelAdapter fuelAdapter;
 
     public FuelDialog(Context context, FuelAdapter fuelAdapter){
+        this.id = -1;
+        this.position = -1;
+
         LayoutInflater layoutInflater = LayoutInflater.from(context);
 
         //todo do not pass null for root
@@ -46,11 +51,18 @@ public class FuelDialog {
         this.fuelAdapter = fuelAdapter;
     }
 
-    public void fillDialog(Context context, FuelViewItem f){
+    public void fillDialog(Context context, FuelViewItem f, int position){
+        this.id = f.getId();
+        this.position = position;
+
+        f.setPricePerLiter(-1.0);
+        this.editTextPriceLiter.setText("");
+
         this.editTextKm.setText(String.valueOf(f.getKm()));
         this.editTextLiters.setText(String.valueOf(f.getLiters()));
         this.editTextPrice.setText(String.valueOf(f.getPrice()));
         this.editToggleFull.setChecked(f.isFull());
+
         this.addDatePicker(context, f.getDate());
     }
 
@@ -124,6 +136,11 @@ public class FuelDialog {
 
             try {
                 price = this.getPrice();
+            } catch (NumberFormatException e) {
+                //ignore, is handled later
+            }
+
+            try{
                 priceLiter = this.getPriceLiter();
             } catch (NumberFormatException e) {
                 //ignore, is handled later
@@ -148,10 +165,16 @@ public class FuelDialog {
 
             if(!isError){
                 if(isUpdate){
-                    /*FuelItem i = new FuelItem(km, liters, price, full, date);
-                    todo get id from initial row i.setId(); maybe store in hidden field in form
-                    fuelAdapter.updateEntity(i);*/
-                    Toast.makeText(d.getContext(), "UPDATE", Toast.LENGTH_SHORT).show();
+                    if(this.id == -1){
+                        Toast.makeText(d.getContext(), "Error update row with no ID!", Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        FuelItem i = new FuelItem(km, liters, price, full, date);
+                        i.setId(this.id);
+                        fuelAdapter.updateEntity(i, this.position);
+
+                        Toast.makeText(d.getContext(), "Refuel updated", Toast.LENGTH_SHORT).show();
+                    }
                 }
                 else{
                     FuelItem i = new FuelItem(km, liters, price, full, date);
@@ -163,41 +186,5 @@ public class FuelDialog {
                 d.dismiss();
             }
         };
-    }
-
-    public void showUpdateDialog(Context context, FuelViewItem f) {
-        // Inflate the custom layout
-        LayoutInflater inflater = LayoutInflater.from(context);
-        // Create a custom view for the dialog
-        View dialogView = inflater.inflate(R.layout.dialog_fuel, null);
-
-        // Get references to the input fields
-        final EditText editTextKm = dialogView.findViewById(R.id.editTextKm);
-        final EditText editTextLiters = dialogView.findViewById(R.id.editTextLiters);
-        final EditText editTextPrice = dialogView.findViewById(R.id.editTextPrice);
-        final SwitchMaterial editToggleFull = dialogView.findViewById(R.id.editToggleFull);
-        final EditText editTextDate = dialogView.findViewById(R.id.editTextDate);
-
-        // Pre-fill the fields with data
-        editTextKm.setText(String.valueOf(f.getKm()));
-        editTextLiters.setText(String.valueOf(f.getLiters()));
-        editTextPrice.setText(String.valueOf(f.getPrice()));
-        editToggleFull.setChecked(f.isFull());
-        //todo use proper date format with / and add the datepicker also here
-        editTextDate.setText(f.getDate().toString());
-
-        // Create and show the AlertDialog
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Edit Details")
-                .setView(dialogView)
-                .setPositiveButton("Update", (dialog, which) -> {
-                    // Get updated data from the fields
-                    //todo get the updated values
-
-                    //todo save the updated data
-                    Toast.makeText(context, "UPDATED DATA SAVED", Toast.LENGTH_SHORT).show();
-                })
-                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
-                .show();
     }
 }
