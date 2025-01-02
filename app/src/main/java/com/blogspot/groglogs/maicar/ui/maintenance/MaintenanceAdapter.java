@@ -169,6 +169,7 @@ public class MaintenanceAdapter extends RecyclerView.Adapter<MaintenanceViewHold
     public void showUpdateDialog(Context context, MaintenanceViewItem m, int position) {
         MaintenanceDialog maintenanceDialog = new MaintenanceDialog(context, this);
 
+        maintenanceDialog.addTypeDropdown(context);
         maintenanceDialog.fillDialog(context, m, position);
 
         //prepare popup input
