@@ -21,13 +21,13 @@ import com.blogspot.groglogs.maicar.ui.menu.TopMenu;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class FuelFragment extends Fragment {
-    private static FuelAdapter fuelAdapter;
+import lombok.Getter;
 
-    //todo check if we can do better
-    public static FuelAdapter getFuelAdapter(){
-        return fuelAdapter;
-    }
+public class FuelFragment extends Fragment {
+
+    //todo check if better way
+    @Getter
+    private static FuelAdapter fuelAdapter;
 
     @Nullable
     @Override

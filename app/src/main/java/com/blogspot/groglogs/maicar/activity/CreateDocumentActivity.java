@@ -9,7 +9,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.blogspot.groglogs.maicar.model.view.FuelViewItem;
+import com.blogspot.groglogs.maicar.model.view.AbstractViewItem;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -19,7 +19,8 @@ import java.util.List;
 public class CreateDocumentActivity extends AppCompatActivity {
 
     public static final String CSV_SEPARATOR=";";
-    public static final String FUEL_DATA = "FUEL_DATA";
+    public static final String DATA = "DATA";
+    public static final String TYPE = "TYPE";
     private ActivityResultLauncher<Intent> createDocumentLauncher;
 
     @Override
@@ -64,10 +65,11 @@ public class CreateDocumentActivity extends AppCompatActivity {
         try {
             OutputStream outputStream = getContentResolver().openOutputStream(uri);
 
-            List<FuelViewItem> items = getIntent().getParcelableArrayListExtra(FUEL_DATA, FuelViewItem.class);
+            List<AbstractViewItem> items = getIntent().getParcelableArrayListExtra(DATA, AbstractViewItem.class);
 
-            for(FuelViewItem item : items){
+            for(AbstractViewItem item : items){
                 outputStream.write(item.toCsv().getBytes());
+                outputStream.write("\n".getBytes());
             }
 
             outputStream.close();

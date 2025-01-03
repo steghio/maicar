@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import lombok.Data;
 
 @Data
-public class FuelViewItem implements Parcelable {
+public class FuelViewItem extends AbstractViewItem {
 
     private Long id;
     private int km;
@@ -92,7 +92,7 @@ public class FuelViewItem implements Parcelable {
                 price + CreateDocumentActivity.CSV_SEPARATOR +
                 pricePerLiter + CreateDocumentActivity.CSV_SEPARATOR +
                 full + CreateDocumentActivity.CSV_SEPARATOR +
-                date.toEpochDay() + CreateDocumentActivity.CSV_SEPARATOR;
+                date.toEpochDay();
     }
 
     public static FuelViewItem fromCsv(String csv){

@@ -14,7 +14,7 @@ import androidx.core.view.MenuProvider;
 import com.blogspot.groglogs.maicar.R;
 import com.blogspot.groglogs.maicar.activity.CreateDocumentActivity;
 import com.blogspot.groglogs.maicar.activity.ReadDocumentActivity;
-import com.blogspot.groglogs.maicar.ui.fuel.FuelAdapter;
+import com.blogspot.groglogs.maicar.ui.adapter.AbstractAdapter;
 
 import java.util.ArrayList;
 
@@ -25,7 +25,7 @@ import lombok.AllArgsConstructor;
 public class TopMenu implements MenuProvider {
 
     private Context context;
-    private FuelAdapter fuelAdapter;
+    private AbstractAdapter adapter;
 
     @Override
     public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
@@ -50,12 +50,14 @@ public class TopMenu implements MenuProvider {
 
     private void importFromFile(){
         Intent intent = new Intent(context, ReadDocumentActivity.class);
+        intent.putExtra(CreateDocumentActivity.TYPE, adapter.getActivityType());
         context.startActivity(intent);
     }
 
     private void exportToFile(){
         Intent intent = new Intent(context, CreateDocumentActivity.class);
-        intent.putParcelableArrayListExtra(CreateDocumentActivity.FUEL_DATA, (ArrayList<? extends Parcelable>) fuelAdapter.getItems());
+        intent.putParcelableArrayListExtra(CreateDocumentActivity.DATA, (ArrayList<? extends Parcelable>) adapter.getItems());
+        intent.putExtra(CreateDocumentActivity.TYPE, adapter.getActivityType());
         context.startActivity(intent);
     }
 }

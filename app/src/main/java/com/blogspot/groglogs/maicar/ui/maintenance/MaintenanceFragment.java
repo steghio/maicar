@@ -11,18 +11,24 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.blogspot.groglogs.maicar.R;
+import com.blogspot.groglogs.maicar.ui.menu.TopMenu;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import lombok.Getter;
 
 //todo add top menu actions
 public class MaintenanceFragment extends Fragment {
 
-    private MaintenanceAdapter maintenanceAdapter;
+    //todo check if better way
+    @Getter
+    private static MaintenanceAdapter maintenanceAdapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -39,6 +45,9 @@ public class MaintenanceFragment extends Fragment {
         recyclerView.addItemDecoration(dividerItemDecoration);
 
         loadData();
+
+        requireActivity().addMenuProvider(new TopMenu(requireContext(), maintenanceAdapter), getViewLifecycleOwner(), Lifecycle.State.RESUMED);
+        requireActivity().invalidateOptionsMenu();
 
         return view;
     }

@@ -16,15 +16,21 @@ import com.blogspot.groglogs.maicar.R;
 import com.blogspot.groglogs.maicar.model.entity.MaintenanceItem;
 import com.blogspot.groglogs.maicar.model.view.MaintenanceViewItem;
 import com.blogspot.groglogs.maicar.storage.db.repository.MaintenanceRepository;
+import com.blogspot.groglogs.maicar.ui.adapter.AbstractAdapter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-//todo add filtering on maintenanceType logic
-public class MaintenanceAdapter extends RecyclerView.Adapter<MaintenanceViewHolder> {
+import lombok.Getter;
 
+//todo add filtering on maintenanceType logic
+public class MaintenanceAdapter extends RecyclerView.Adapter<MaintenanceViewHolder> implements AbstractAdapter {
+
+    public static final String ACTIVITY_TYPE = "MAINTENANCE";
+
+    @Getter
     private List<MaintenanceViewItem> items;
 
     private MaintenanceRepository maintenanceRepository;
@@ -188,5 +194,9 @@ public class MaintenanceAdapter extends RecyclerView.Adapter<MaintenanceViewHold
         });
 
         dialog.show();
+    }
+
+    public String getActivityType(){
+        return ACTIVITY_TYPE;
     }
 }

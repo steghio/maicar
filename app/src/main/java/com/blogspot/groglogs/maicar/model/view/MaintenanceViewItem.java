@@ -1,7 +1,12 @@
 package com.blogspot.groglogs.maicar.model.view;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.blogspot.groglogs.maicar.R;
+import com.blogspot.groglogs.maicar.activity.CreateDocumentActivity;
 import com.blogspot.groglogs.maicar.model.entity.MaintenanceTypeEnum;
+import com.blogspot.groglogs.maicar.util.StringUtils;
 
 import java.time.LocalDate;
 
@@ -10,9 +15,12 @@ import lombok.Data;
 
 @AllArgsConstructor
 @Data
-public class MaintenanceViewItem {
+public class MaintenanceViewItem extends AbstractViewItem {
 
-    private long id;
+    //todo better way than this
+    private static final String NULL_PLACEHOLDER = "#null#";
+
+    private Long id;
     private int km;
     private double price;
     private LocalDate date;
@@ -37,5 +45,62 @@ public class MaintenanceViewItem {
 
     public MaintenanceTypeEnum getMaintenanceType(){
         return this.maintenanceType == null ? MaintenanceTypeEnum.OTHER : this.maintenanceType;
+    }
+
+    // Parcelable implementation
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(id);
+        dest.writeInt(km);
+        dest.writeDouble(price);
+        dest.writeLong(date.toEpochDay());
+        dest.writeString(maintenanceType.name());
+        dest.writeString(notes);
+    }
+
+    protected MaintenanceViewItem(Parcel in) {
+        id = in.readLong();
+        km = in.readInt();
+        price = in.readDouble();
+        date = LocalDate.ofEpochDay(in.readLong());
+        maintenanceType = MaintenanceTypeEnum.valueOf(in.readString());
+        notes = in.readString();
+    }
+
+    public static final Parcelable.Creator<MaintenanceViewItem> CREATOR = new Parcelable.Creator<MaintenanceViewItem>() {
+        @Override
+        public MaintenanceViewItem createFromParcel(Parcel source) {
+            return new MaintenanceViewItem(source);
+        }
+
+        @Override
+        public MaintenanceViewItem[] newArray(int size) {
+            return new MaintenanceViewItem[size];
+        }
+    };
+
+    public String toCsv(){
+        return id + CreateDocumentActivity.CSV_SEPARATOR +
+                km + CreateDocumentActivity.CSV_SEPARATOR +
+                price + CreateDocumentActivity.CSV_SEPARATOR +
+                date.toEpochDay() + CreateDocumentActivity.CSV_SEPARATOR +
+                maintenanceType.name() + CreateDocumentActivity.CSV_SEPARATOR +
+                (StringUtils.isBlank(notes) ? NULL_PLACEHOLDER : notes);
+    }
+
+    public static MaintenanceViewItem fromCsv(String csv){
+        String[] split = csv.split(CreateDocumentActivity.CSV_SEPARATOR);
+
+        return new MaintenanceViewItem(null,
+                Integer.parseInt(split[1]),
+                Double.parseDouble(split[2]),
+                LocalDate.ofEpochDay(Long.parseLong(split[3])),
+                MaintenanceTypeEnum.valueOf(split[4]),
+                NULL_PLACEHOLDER.equals(split[5]) ? "" : split[5]);
     }
 }

@@ -10,8 +10,13 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.blogspot.groglogs.maicar.model.entity.FuelItem;
+import com.blogspot.groglogs.maicar.model.entity.MaintenanceItem;
 import com.blogspot.groglogs.maicar.model.view.FuelViewItem;
+import com.blogspot.groglogs.maicar.model.view.MaintenanceViewItem;
+import com.blogspot.groglogs.maicar.ui.fuel.FuelAdapter;
 import com.blogspot.groglogs.maicar.ui.fuel.FuelFragment;
+import com.blogspot.groglogs.maicar.ui.maintenance.MaintenanceAdapter;
+import com.blogspot.groglogs.maicar.ui.maintenance.MaintenanceFragment;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -56,22 +61,54 @@ public class ReadDocumentActivity extends AppCompatActivity {
     }
 
     private void readFromFile(Uri fileUri) {
+
+        String activityType = getIntent().getStringExtra(CreateDocumentActivity.TYPE);
+
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(getContentResolver().openInputStream(fileUri)))) {
-            String line;
 
-            while ((line = reader.readLine()) != null) {
-
-                FuelViewItem item = FuelViewItem.fromCsv(line);
-
-                //todo if we have id, update, otherwise save
-                FuelItem f = new FuelItem(item.getKm(), item.getLiters(), item.getPrice(), item.isFull(), item.getDate());
-
-                FuelFragment.getFuelAdapter().saveEntity(f);
+            if(FuelAdapter.ACTIVITY_TYPE.equals(activityType)){
+                readFuelItems(reader);
             }
-
-            Toast.makeText(this, "File read successfully", Toast.LENGTH_SHORT).show();
+            else if(MaintenanceAdapter.ACTIVITY_TYPE.equals(activityType)){
+                readMaintenanceItems(reader);
+            }
+            else{
+                Toast.makeText(this, "Neither Fuel nor Maintenance activity source!", Toast.LENGTH_SHORT).show();
+            }
         } catch (IOException e) {
             Toast.makeText(this, "Failed to read the file", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void readFuelItems(BufferedReader reader) throws IOException {
+        String line;
+
+        while ((line = reader.readLine()) != null) {
+
+            FuelViewItem item = FuelViewItem.fromCsv(line);
+
+            //todo if we have id, update, otherwise save
+            FuelItem f = new FuelItem(item.getKm(), item.getLiters(), item.getPrice(), item.isFull(), item.getDate());
+
+            FuelFragment.getFuelAdapter().saveEntity(f);
+        }
+
+        Toast.makeText(this, "Fuel items imported successfully", Toast.LENGTH_SHORT).show();
+    }
+
+    private void readMaintenanceItems(BufferedReader reader) throws IOException {
+        String line;
+
+        while ((line = reader.readLine()) != null) {
+
+            MaintenanceViewItem item = MaintenanceViewItem.fromCsv(line);
+
+            //todo if we have id, update, otherwise save
+            MaintenanceItem f = new MaintenanceItem(item.getKm(), item.getPrice(), item.getDate(), item.getMaintenanceType(), item.getNotes());
+
+            MaintenanceFragment.getMaintenanceAdapter().saveEntity(f);
+        }
+
+        Toast.makeText(this, "Maintenance items imported successfully", Toast.LENGTH_SHORT).show();
     }
 }
