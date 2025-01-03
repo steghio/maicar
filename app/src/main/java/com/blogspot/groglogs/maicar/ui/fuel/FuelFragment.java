@@ -11,11 +11,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.blogspot.groglogs.maicar.R;
+import com.blogspot.groglogs.maicar.ui.menu.TopMenu;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -38,6 +40,9 @@ public class FuelFragment extends Fragment {
         recyclerView.addItemDecoration(dividerItemDecoration);
 
         loadData();
+
+        requireActivity().addMenuProvider(new TopMenu(requireContext()), getViewLifecycleOwner(), Lifecycle.State.RESUMED);
+        requireActivity().invalidateOptionsMenu();
 
         return view;
     }

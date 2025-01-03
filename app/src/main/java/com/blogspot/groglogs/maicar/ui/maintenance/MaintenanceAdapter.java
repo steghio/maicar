@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+//todo add filtering on maintenanceType logic
 public class MaintenanceAdapter extends RecyclerView.Adapter<MaintenanceViewHolder> {
 
     private List<MaintenanceViewItem> items;

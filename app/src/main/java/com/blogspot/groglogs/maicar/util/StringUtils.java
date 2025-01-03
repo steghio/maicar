@@ -13,4 +13,8 @@ public class StringUtils {
     public static String decimal2String1Precision(double d){
         return df1.format(d);
     }
+
+    public static boolean isBlank(String s){
+        return s == null || s.trim().isEmpty();
+    }
 }
