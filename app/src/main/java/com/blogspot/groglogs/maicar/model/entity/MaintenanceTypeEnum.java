@@ -4,12 +4,14 @@ import androidx.annotation.NonNull;
 
 import com.blogspot.groglogs.maicar.R;
 
+//todo better way than label for display and get value
 public enum MaintenanceTypeEnum {
     TYRES,
     CHECK,
     OIL,
     BATTERY,
     WIPERS,
+    WASH,
     OTHER;
 
     public static int getEnumIcon(MaintenanceTypeEnum maintenanceTypeEnum){
@@ -28,6 +30,9 @@ public enum MaintenanceTypeEnum {
             }
             case WIPERS -> {
                 return R.drawable.ic_wiper_24dp;
+            }
+            case WASH -> {
+                return R.drawable.ic_wash_24dp;
             }
             default -> {
                 return -1;
@@ -53,6 +58,9 @@ public enum MaintenanceTypeEnum {
             }
             case WIPERS -> {
                 return "Wipers";
+            }
+            case WASH -> {
+                return "Wash";
             }
             default -> {
                 return "Other";
@@ -80,6 +88,9 @@ public enum MaintenanceTypeEnum {
             }
             case "Wipers" -> {
                 return MaintenanceTypeEnum.WIPERS;
+            }
+            case "Wash" -> {
+                return MaintenanceTypeEnum.WASH;
             }
             default -> {
                 return MaintenanceTypeEnum.OTHER;
