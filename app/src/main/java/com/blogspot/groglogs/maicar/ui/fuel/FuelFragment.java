@@ -22,7 +22,12 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class FuelFragment extends Fragment {
-    private FuelAdapter fuelAdapter;
+    private static FuelAdapter fuelAdapter;
+
+    //todo check if we can do better
+    public static FuelAdapter getFuelAdapter(){
+        return fuelAdapter;
+    }
 
     @Nullable
     @Override
@@ -41,7 +46,7 @@ public class FuelFragment extends Fragment {
 
         loadData();
 
-        requireActivity().addMenuProvider(new TopMenu(requireContext()), getViewLifecycleOwner(), Lifecycle.State.RESUMED);
+        requireActivity().addMenuProvider(new TopMenu(requireContext(), fuelAdapter), getViewLifecycleOwner(), Lifecycle.State.RESUMED);
         requireActivity().invalidateOptionsMenu();
 
         return view;

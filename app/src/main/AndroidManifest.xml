@@ -26,6 +26,10 @@
         <activity android:name=".activity.CreateDocumentActivity"
             android:label="Create Document"
             android:exported="true" />
-    </application>
 
+        <activity android:name=".activity.ReadDocumentActivity"
+            android:label="Read Document"
+            android:exported="true" />
+
+    </application>
 </manifest>

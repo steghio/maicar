@@ -2,6 +2,7 @@ package com.blogspot.groglogs.maicar.ui.menu;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Parcelable;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -12,6 +13,10 @@ import androidx.core.view.MenuProvider;
 
 import com.blogspot.groglogs.maicar.R;
 import com.blogspot.groglogs.maicar.activity.CreateDocumentActivity;
+import com.blogspot.groglogs.maicar.activity.ReadDocumentActivity;
+import com.blogspot.groglogs.maicar.ui.fuel.FuelAdapter;
+
+import java.util.ArrayList;
 
 import lombok.AllArgsConstructor;
 
@@ -20,6 +25,7 @@ import lombok.AllArgsConstructor;
 public class TopMenu implements MenuProvider {
 
     private Context context;
+    private FuelAdapter fuelAdapter;
 
     @Override
     public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
@@ -43,13 +49,13 @@ public class TopMenu implements MenuProvider {
     }
 
     private void importFromFile(){
-        //todo activity to import instead
-        Intent intent = new Intent(context, CreateDocumentActivity.class);
+        Intent intent = new Intent(context, ReadDocumentActivity.class);
         context.startActivity(intent);
     }
 
     private void exportToFile(){
         Intent intent = new Intent(context, CreateDocumentActivity.class);
+        intent.putParcelableArrayListExtra(CreateDocumentActivity.FUEL_DATA, (ArrayList<? extends Parcelable>) fuelAdapter.getItems());
         context.startActivity(intent);
     }
 }

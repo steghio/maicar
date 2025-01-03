@@ -3,18 +3,23 @@ package com.blogspot.groglogs.maicar.activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.blogspot.groglogs.maicar.model.view.FuelViewItem;
+
 import java.io.IOException;
 import java.io.OutputStream;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class CreateDocumentActivity extends AppCompatActivity {
+
+    public static final String CSV_SEPARATOR=";";
+    public static final String FUEL_DATA = "FUEL_DATA";
     private ActivityResultLauncher<Intent> createDocumentLauncher;
 
     @Override
@@ -23,23 +28,24 @@ public class CreateDocumentActivity extends AppCompatActivity {
 
         // Register the ActivityResultLauncher using OpenDocument contract
         createDocumentLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<androidx.activity.result.ActivityResult>() {
-                    @Override
-                    public void onActivityResult(androidx.activity.result.ActivityResult result) {
-                        if (result.getResultCode() == RESULT_OK) {
-                            Intent data = result.getData();
-                            if (data != null) {
-                                Uri uri = data.getData();
-                                // Once the user selects a file, write content to it
-                                if (uri != null) {
-                                    writeToFile(uri);
-                                }
+                new ActivityResultContracts.StartActivityForResult(), result -> {
+                    if (result.getResultCode() == RESULT_OK) {
+                        Intent data = result.getData();
+                        if (data != null) {
+                            Uri uri = data.getData();
+                            // Once the user selects a file, write content to it
+                            if (uri != null) {
+                                writeToFile(uri);
                             }
                         }
-                        // Finish the current activity and return to the previous screen
-
-                        finish();
                     }
+                    else {
+                        // Inform the user if no file was selected
+                        Toast.makeText(CreateDocumentActivity.this, "Error creating file", Toast.LENGTH_SHORT).show();
+                    }
+
+                    // Finish the current activity and return to the previous screen
+                    finish();
                 });
 
         createDocument();
@@ -57,14 +63,16 @@ public class CreateDocumentActivity extends AppCompatActivity {
     private void writeToFile(Uri uri) {
         try {
             OutputStream outputStream = getContentResolver().openOutputStream(uri);
-            if (outputStream != null) {
-                //todo write the actual file
-                String text = "asd;lol";
-                outputStream.write(text.getBytes());
-                outputStream.close();
+
+            List<FuelViewItem> items = getIntent().getParcelableArrayListExtra(FUEL_DATA, FuelViewItem.class);
+
+            for(FuelViewItem item : items){
+                outputStream.write(item.toCsv().getBytes());
             }
+
+            outputStream.close();
         } catch (IOException e) {
-            //todo handle
+            Toast.makeText(this, "Failed to write the file", Toast.LENGTH_SHORT).show();
         }
     }
 }

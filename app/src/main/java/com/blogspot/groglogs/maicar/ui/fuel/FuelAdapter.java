@@ -25,7 +25,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import lombok.Getter;
+
 public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> {
+    @Getter
     private List<FuelViewItem> items;
     //key = item position, value = mpg for item (if full tank)
     private Map<Integer,Double> mpgMap;
