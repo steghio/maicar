@@ -88,18 +88,20 @@ public class MaintenanceViewItem extends AbstractViewItem {
         return id + CreateDocumentActivity.CSV_SEPARATOR +
                 km + CreateDocumentActivity.CSV_SEPARATOR +
                 price + CreateDocumentActivity.CSV_SEPARATOR +
-                date.toEpochDay() + CreateDocumentActivity.CSV_SEPARATOR +
+                date.toString() + CreateDocumentActivity.CSV_SEPARATOR +
                 maintenanceType.name() + CreateDocumentActivity.CSV_SEPARATOR +
-                (StringUtils.isBlank(notes) ? NULL_PLACEHOLDER : notes);
+                (StringUtils.isBlank(notes) ? NULL_PLACEHOLDER : notes) + "\n";
     }
 
     public static MaintenanceViewItem fromCsv(String csv){
         String[] split = csv.split(CreateDocumentActivity.CSV_SEPARATOR);
 
+        String[] dateString = split[3].split("-");
+
         return new MaintenanceViewItem(null,
                 Integer.parseInt(split[1]),
                 Double.parseDouble(split[2]),
-                LocalDate.ofEpochDay(Long.parseLong(split[3])),
+                LocalDate.of(Integer.parseInt(dateString[0]), Integer.parseInt(dateString[1]), Integer.parseInt(dateString[2])),
                 MaintenanceTypeEnum.valueOf(split[4]),
                 NULL_PLACEHOLDER.equals(split[5]) ? "" : split[5]);
     }

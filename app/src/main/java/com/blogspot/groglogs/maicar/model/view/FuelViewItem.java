@@ -92,18 +92,20 @@ public class FuelViewItem extends AbstractViewItem {
                 price + CreateDocumentActivity.CSV_SEPARATOR +
                 pricePerLiter + CreateDocumentActivity.CSV_SEPARATOR +
                 full + CreateDocumentActivity.CSV_SEPARATOR +
-                date.toEpochDay();
+                date.toString() + "\n";
     }
 
     public static FuelViewItem fromCsv(String csv){
         String[] split = csv.split(CreateDocumentActivity.CSV_SEPARATOR);
+
+        String[] dateString = split[6].split("-");
 
         FuelViewItem i = new FuelViewItem(null,
                 Integer.parseInt(split[1]),
                 Double.parseDouble(split[2]),
                 Double.parseDouble(split[3]),
                 Boolean.parseBoolean(split[5]),
-                LocalDate.ofEpochDay(Long.parseLong(split[6]))
+                LocalDate.of(Integer.parseInt(dateString[0]), Integer.parseInt(dateString[1]), Integer.parseInt(dateString[2]))
         );
 
         if(i.getLiters() > 0) {

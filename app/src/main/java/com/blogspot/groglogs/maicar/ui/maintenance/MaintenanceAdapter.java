@@ -50,6 +50,7 @@ public class MaintenanceAdapter extends RecyclerView.Adapter<MaintenanceViewHold
     }
 
     //todo use strings with placeholders
+    //todo somehow the import calculates correct icon, but displays another one which fixes itself on refresh..
     @Override
     public void onBindViewHolder(@NonNull MaintenanceViewHolder holder, int position) {
         MaintenanceViewItem item = items.get(position);

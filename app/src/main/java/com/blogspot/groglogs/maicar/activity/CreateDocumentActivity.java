@@ -55,7 +55,11 @@ public class CreateDocumentActivity extends AppCompatActivity {
     private void createDocument() {
         Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
         intent.setType("text/csv");
-        intent.putExtra(Intent.EXTRA_TITLE, "maicar_export_" + LocalDateTime.now().toString() + ".csv");
+        intent.putExtra(Intent.EXTRA_TITLE, "maicar_export_" +
+                getIntent().getStringExtra(CreateDocumentActivity.TYPE) +
+                "_" +
+                LocalDateTime.now().toString() +
+                ".csv");
 
         // Launch the document creation flow
         createDocumentLauncher.launch(intent);
@@ -69,7 +73,6 @@ public class CreateDocumentActivity extends AppCompatActivity {
 
             for(AbstractViewItem item : items){
                 outputStream.write(item.toCsv().getBytes());
-                outputStream.write("\n".getBytes());
             }
 
             outputStream.close();
