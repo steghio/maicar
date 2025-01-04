@@ -3,7 +3,6 @@ package com.blogspot.groglogs.maicar.ui.fuel;
 import android.app.AlertDialog;
 import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,15 +13,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.blogspot.groglogs.maicar.R;
-import com.blogspot.groglogs.maicar.activity.CreateDocumentActivity;
 import com.blogspot.groglogs.maicar.model.view.FuelViewItem;
 import com.blogspot.groglogs.maicar.model.entity.FuelItem;
 import com.blogspot.groglogs.maicar.storage.db.repository.FuelRepository;
 import com.blogspot.groglogs.maicar.ui.adapter.AbstractAdapter;
 import com.blogspot.groglogs.maicar.util.StringUtils;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,7 +28,7 @@ import java.util.concurrent.ExecutionException;
 
 import lombok.Getter;
 
-//todo get recyclerview in input then use recyclerView.post(() -> notifyDataSetChanged()); to notify ui display refresh
+//todo refresh on actions
 public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> implements AbstractAdapter {
 
     public static final String ACTIVITY_TYPE = "FUEL";
@@ -140,7 +136,6 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> implements
         this.items = new ArrayList<>();
         this.mpgMap = new HashMap<>();
 
-        //ensure view is cleared before readding all elements
         this.recyclerView.post(() -> notifyDataSetChanged());
 
         List<FuelItem> entities = loadAndCalculateMpg();
@@ -193,10 +188,9 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> implements
     public void deleteItem(FuelViewItem item, int position){
         fuelRepository.delete(item.getId());
 
-        /*items.remove(position);
+        items.remove(position);
 
-        recyclerView.post(() -> notifyItemRemoved(position));*/
-        loadAllItems();
+        recyclerView.post(() -> notifyItemRemoved(position));
     }
 
     public void saveEntity(FuelItem entity) {
@@ -207,17 +201,15 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> implements
             throw new RuntimeException(e);
         }
 
-        //addEntity(entity);
         loadAllItems();
     }
 
     public void updateEntity(FuelItem entity, int position){
         fuelRepository.update(entity);
 
-        /*items.set(position, new FuelViewItem(entity.getId(), entity.getKm(), entity.getLiters(), entity.getPrice(), entity.isFull(), entity.getDate()));
+        items.set(position, new FuelViewItem(entity.getId(), entity.getKm(), entity.getLiters(), entity.getPrice(), entity.isFull(), entity.getDate()));
 
-        recyclerView.post(() -> notifyItemChanged(position));*/
-        loadAllItems();
+        recyclerView.post(() -> notifyItemChanged(position));
     }
 
     public void addEntity(FuelItem entity) {
@@ -268,14 +260,6 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> implements
         });
 
         dialog.show();
-    }
-
-    public void writeToOutputStream(Intent intent, OutputStream outputStream) throws IOException {
-        List<FuelViewItem> items = intent.getParcelableArrayListExtra(CreateDocumentActivity.DATA, FuelViewItem.class);
-
-        for(FuelViewItem item : items){
-            outputStream.write(item.toCsv().getBytes());
-        }
     }
 
     public String getActivityType(){
