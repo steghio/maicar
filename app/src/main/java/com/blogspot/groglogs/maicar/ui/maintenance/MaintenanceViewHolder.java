@@ -1,5 +1,7 @@
 package com.blogspot.groglogs.maicar.ui.maintenance;
 
+import android.graphics.text.LineBreaker;
+import android.text.Layout;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -35,6 +37,12 @@ public class MaintenanceViewHolder extends RecyclerView.ViewHolder {
         this.priceIconImageView = itemView.findViewById(R.id.priceIconImageView);
         this.priceTextView = itemView.findViewById(R.id.priceTextView);
         this.notesTextView = itemView.findViewById(R.id.notesTextView);
+        //todo make note break in multiline text properly
+        this.notesTextView.setSingleLine(false);
+        this.notesTextView.setBreakStrategy(LineBreaker.BREAK_STRATEGY_HIGH_QUALITY);
+        this.notesTextView.setEllipsize(null);
+        this.notesTextView.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
+
         this.dateTextView = itemView.findViewById(R.id.dateTextView);
         this.editButton = itemView.findViewById(R.id.editButton);
         this.deleteButton = itemView.findViewById(R.id.deleteButton);

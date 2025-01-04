@@ -37,7 +37,7 @@ public class MaintenanceFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
 
-        maintenanceAdapter = new MaintenanceAdapter(getActivity().getApplication());
+        maintenanceAdapter = new MaintenanceAdapter(getActivity().getApplication(), recyclerView);
         recyclerView.setAdapter(maintenanceAdapter);
 
         //divider between items in view

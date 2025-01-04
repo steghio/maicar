@@ -35,9 +35,12 @@ public class MaintenanceAdapter extends RecyclerView.Adapter<MaintenanceViewHold
 
     private MaintenanceRepository maintenanceRepository;
 
-    public MaintenanceAdapter(Application application) {
+    private RecyclerView recyclerView;
+
+    public MaintenanceAdapter(Application application, RecyclerView recyclerView) {
         this.items = new ArrayList<>();
         this.maintenanceRepository = new MaintenanceRepository(application);
+        this.recyclerView = recyclerView;
     }
 
     @NonNull
@@ -70,26 +73,20 @@ public class MaintenanceAdapter extends RecyclerView.Adapter<MaintenanceViewHold
         ImageButton editButton = holder.getEditButton();
 
         if(editButton != null){
-            editButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Toast.makeText(view.getContext(), "EDIT ID: " + item.getId() + " - POS: " + holder.getAdapterPosition(), Toast.LENGTH_SHORT).show();
+            editButton.setOnClickListener(view -> {
+                Toast.makeText(view.getContext(), "EDIT ID: " + item.getId() + " - POS: " + holder.getAdapterPosition(), Toast.LENGTH_SHORT).show();
 
-                    showUpdateDialog(view.getContext(), item, holder.getAdapterPosition());
-                }
+                showUpdateDialog(view.getContext(), item, holder.getAdapterPosition());
             });
         }
 
         ImageButton deleteButton = holder.getDeleteButton();
 
         if(deleteButton != null){
-            deleteButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Toast.makeText(view.getContext(), "DELETE ID: " + item.getId() + " - POS: " + holder.getAdapterPosition(), Toast.LENGTH_SHORT).show();
+            deleteButton.setOnClickListener(view -> {
+                Toast.makeText(view.getContext(), "DELETE ID: " + item.getId() + " - POS: " + holder.getAdapterPosition(), Toast.LENGTH_SHORT).show();
 
-                    deleteItem(item, holder.getAdapterPosition());
-                }
+                deleteItem(item, holder.getAdapterPosition());
             });
         }
     }
@@ -99,9 +96,11 @@ public class MaintenanceAdapter extends RecyclerView.Adapter<MaintenanceViewHold
         return items.size();
     }
 
-    //load asc but display desc
     public void loadAllItems(){
         this.items = new ArrayList<>();
+
+        //ensure view is cleared before readding all elements
+        this.recyclerView.post(() -> notifyDataSetChanged());
 
         List<MaintenanceItem> entities = new ArrayList<>();
 
@@ -120,35 +119,37 @@ public class MaintenanceAdapter extends RecyclerView.Adapter<MaintenanceViewHold
     public void deleteItem(MaintenanceViewItem item, int position){
         maintenanceRepository.delete(item.getId());
 
-        items.remove(position);
+        /*items.remove(position);
 
-        notifyItemRemoved(position);
+        notifyItemRemoved(position);*/
+        loadAllItems();
     }
 
     public void saveEntity(MaintenanceItem entity) {
         //todo handle properly
         try {
-            long id = maintenanceRepository.insert(entity);
-            entity.setId(id);
+            maintenanceRepository.insert(entity);
         } catch (ExecutionException | InterruptedException e) {
             throw new RuntimeException(e);
         }
 
-        addEntity(entity);
+        //addEntity(entity);
+        loadAllItems();
     }
 
     public void updateEntity(MaintenanceItem entity, int position){
         maintenanceRepository.update(entity);
 
-        items.set(position, new MaintenanceViewItem(entity.getId(), entity.getKm(), entity.getPrice(), entity.getDate(), entity.getMaintenanceType(), entity.getNotes()));
+        /*items.set(position, new MaintenanceViewItem(entity.getId(), entity.getKm(), entity.getPrice(), entity.getDate(), entity.getMaintenanceType(), entity.getNotes()));
 
-        notifyItemChanged(position);
+        notifyItemChanged(position);*/
+        loadAllItems();
     }
 
     public void addEntity(MaintenanceItem entity) {
         items.add(new MaintenanceViewItem(entity.getId(), entity.getKm(), entity.getPrice(), entity.getDate(), entity.getMaintenanceType(), entity.getNotes()));
-        //todo refresh UI correctly and have item appear in sorted place
-        notifyItemInserted(items.size() - 1);
+
+        recyclerView.post(() -> notifyItemInserted(items.size() - 1));
     }
 
     public void showInsertDialog(Context context) {

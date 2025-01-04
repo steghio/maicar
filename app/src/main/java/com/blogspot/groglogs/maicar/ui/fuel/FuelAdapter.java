@@ -32,6 +32,7 @@ import java.util.concurrent.ExecutionException;
 
 import lombok.Getter;
 
+//todo get recyclerview in input then use recyclerView.post(() -> notifyDataSetChanged()); to notify ui display refresh
 public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> implements AbstractAdapter {
 
     public static final String ACTIVITY_TYPE = "FUEL";
@@ -43,10 +44,13 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> implements
 
     private FuelRepository fuelRepository;
 
-    public FuelAdapter(Application application) {
+    private RecyclerView recyclerView;
+
+    public FuelAdapter(Application application, RecyclerView recyclerView) {
         this.items = new ArrayList<>();
         this.mpgMap = new HashMap<>();
         this.fuelRepository = new FuelRepository(application);
+        this.recyclerView = recyclerView;
     }
 
     @NonNull
@@ -59,7 +63,6 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> implements
     }
 
     //todo use strings with placeholders
-    //todo mpg calc logic in all calls (load, update, insert, delete)
     @Override
     public void onBindViewHolder(@NonNull FuelViewHolder holder, int position) {
         FuelViewItem item = items.get(position);
@@ -109,26 +112,20 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> implements
         ImageButton editButton = holder.getEditButton();
 
         if(editButton != null){
-            editButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Toast.makeText(view.getContext(), "EDIT ID: " + item.getId() + " - POS: " + holder.getAdapterPosition(), Toast.LENGTH_SHORT).show();
+            editButton.setOnClickListener(view -> {
+                Toast.makeText(view.getContext(), "EDIT ID: " + item.getId() + " - POS: " + holder.getAdapterPosition(), Toast.LENGTH_SHORT).show();
 
-                    showUpdateDialog(view.getContext(), item, holder.getAdapterPosition());
-                }
+                showUpdateDialog(view.getContext(), item, holder.getAdapterPosition());
             });
         }
 
         ImageButton deleteButton = holder.getDeleteButton();
 
         if(deleteButton != null){
-            deleteButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Toast.makeText(view.getContext(), "DELETE ID: " + item.getId() + " - POS: " + holder.getAdapterPosition(), Toast.LENGTH_SHORT).show();
+            deleteButton.setOnClickListener(view -> {
+                Toast.makeText(view.getContext(), "DELETE ID: " + item.getId() + " - POS: " + holder.getAdapterPosition(), Toast.LENGTH_SHORT).show();
 
-                    deleteItem(item, holder.getAdapterPosition());
-                }
+                deleteItem(item, holder.getAdapterPosition());
             });
         }
     }
@@ -143,6 +140,17 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> implements
         this.items = new ArrayList<>();
         this.mpgMap = new HashMap<>();
 
+        //ensure view is cleared before readding all elements
+        this.recyclerView.post(() -> notifyDataSetChanged());
+
+        List<FuelItem> entities = loadAndCalculateMpg();
+
+        for(int i = entities.size() - 1; i >= 0; i--){
+            addEntity(entities.get(i));
+        }
+    }
+
+    private List<FuelItem> loadAndCalculateMpg(){
         List<FuelItem> entities = new ArrayList<>();
 
         //todo handle properly
@@ -179,43 +187,43 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> implements
             }
         }
 
-        for(int i = entities.size() - 1; i >= 0; i--){
-            addEntity(entities.get(i));
-        }
+        return entities;
     }
 
     public void deleteItem(FuelViewItem item, int position){
         fuelRepository.delete(item.getId());
 
-        items.remove(position);
+        /*items.remove(position);
 
-        notifyItemRemoved(position);
+        recyclerView.post(() -> notifyItemRemoved(position));*/
+        loadAllItems();
     }
 
     public void saveEntity(FuelItem entity) {
         //todo handle properly
         try {
-            long id = fuelRepository.insert(entity);
-            entity.setId(id);
+            fuelRepository.insert(entity);
         } catch (ExecutionException | InterruptedException e) {
             throw new RuntimeException(e);
         }
 
-        addEntity(entity);
+        //addEntity(entity);
+        loadAllItems();
     }
 
     public void updateEntity(FuelItem entity, int position){
         fuelRepository.update(entity);
 
-        items.set(position, new FuelViewItem(entity.getId(), entity.getKm(), entity.getLiters(), entity.getPrice(), entity.isFull(), entity.getDate()));
+        /*items.set(position, new FuelViewItem(entity.getId(), entity.getKm(), entity.getLiters(), entity.getPrice(), entity.isFull(), entity.getDate()));
 
-        notifyItemChanged(position);
+        recyclerView.post(() -> notifyItemChanged(position));*/
+        loadAllItems();
     }
 
     public void addEntity(FuelItem entity) {
         items.add(new FuelViewItem(entity.getId(), entity.getKm(), entity.getLiters(), entity.getPrice(), entity.isFull(), entity.getDate()));
-        //todo refresh UI correctly and have item appear in sorted place
-        notifyItemInserted(items.size() - 1);
+
+        recyclerView.post(() -> notifyItemInserted(items.size() - 1));
     }
 
     public void showInsertDialog(Context context) {

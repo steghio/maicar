@@ -37,7 +37,7 @@ public class FuelFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
 
-        fuelAdapter = new FuelAdapter(getActivity().getApplication());
+        fuelAdapter = new FuelAdapter(getActivity().getApplication(), recyclerView);
         recyclerView.setAdapter(fuelAdapter);
 
         //divider between items in view
