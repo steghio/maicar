@@ -119,10 +119,9 @@ public class MaintenanceAdapter extends RecyclerView.Adapter<MaintenanceViewHold
     public void deleteItem(MaintenanceViewItem item, int position){
         maintenanceRepository.delete(item.getId());
 
-        /*items.remove(position);
+        items.remove(position);
 
-        notifyItemRemoved(position);*/
-        loadAllItems();
+        recyclerView.post(() -> notifyItemRemoved(position));
     }
 
     public void saveEntity(MaintenanceItem entity) {
@@ -140,10 +139,9 @@ public class MaintenanceAdapter extends RecyclerView.Adapter<MaintenanceViewHold
     public void updateEntity(MaintenanceItem entity, int position){
         maintenanceRepository.update(entity);
 
-        /*items.set(position, new MaintenanceViewItem(entity.getId(), entity.getKm(), entity.getPrice(), entity.getDate(), entity.getMaintenanceType(), entity.getNotes()));
+        items.set(position, new MaintenanceViewItem(entity.getId(), entity.getKm(), entity.getPrice(), entity.getDate(), entity.getMaintenanceType(), entity.getNotes()));
 
-        notifyItemChanged(position);*/
-        loadAllItems();
+        recyclerView.post(() -> notifyItemChanged(position));
     }
 
     public void addEntity(MaintenanceItem entity) {
