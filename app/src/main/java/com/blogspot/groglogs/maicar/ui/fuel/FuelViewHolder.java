@@ -27,7 +27,6 @@ public class FuelViewHolder extends RecyclerView.ViewHolder {
     private final ImageButton editButton;
     private final ImageButton deleteButton;
 
-    //todo gridlayout column weights for proper item spacing and positioning
     public FuelViewHolder(@NonNull View itemView) {
         super(itemView);
         this.kmIconImageView = itemView.findViewById(R.id.kmIconImageView);

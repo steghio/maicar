@@ -26,7 +26,6 @@ public class MaintenanceViewHolder extends RecyclerView.ViewHolder {
     private final ImageButton editButton;
     private final ImageButton deleteButton;
 
-    //todo gridlayout column weights for proper item positioning
     public MaintenanceViewHolder(@NonNull View itemView) {
         super(itemView);
         this.kmIconImageView = itemView.findViewById(R.id.kmIconImageView);
