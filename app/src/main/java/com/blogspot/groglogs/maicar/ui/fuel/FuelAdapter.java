@@ -33,6 +33,8 @@ public class FuelAdapter extends AbstractAdapter<FuelViewHolder> {
 
     @Getter
     private List<FuelViewItem> items;
+
+    //todo if possible to track better structure to modify only what necessary on data changes to display correct mpg comparison
     //key = item position, value = mpg for item (if full tank)
     private Map<Integer,Double> mpgMap;
 
@@ -85,7 +87,7 @@ public class FuelAdapter extends AbstractAdapter<FuelViewHolder> {
         Double mpg = mpgMap.get(items.size() - 1 - position);
 
         if(position < items.size() && mpg != null) {
-            int img = -1;
+            int img;
 
             if(prevMpg == null || Math.abs(prevMpg - mpg) == 0.0){
                 img = R.drawable.ic_chart_flat_24dp;
@@ -110,7 +112,7 @@ public class FuelAdapter extends AbstractAdapter<FuelViewHolder> {
         holder.getDeleteButton().setOnClickListener(view -> {
                 Toast.makeText(view.getContext(), "DELETE ID: " + item.getId() + " - POS: " + holder.getAdapterPosition(), Toast.LENGTH_SHORT).show();
 
-                deleteItem(item, holder.getAdapterPosition());
+                deleteItem(item);
             });
     }
 
@@ -134,7 +136,7 @@ public class FuelAdapter extends AbstractAdapter<FuelViewHolder> {
     }
 
     private List<FuelItem> loadAndCalculateMpg(){
-        List<FuelItem> entities = new ArrayList<>();
+        List<FuelItem> entities;
 
         try {
             entities = fuelRepository.getAllItemsByDateAsc();
@@ -174,10 +176,12 @@ public class FuelAdapter extends AbstractAdapter<FuelViewHolder> {
         return entities;
     }
 
-    public void deleteItem(FuelViewItem item, int position){
+    public void deleteItem(FuelViewItem item){
         fuelRepository.delete(item.getId());
-        items.remove(position);
-        recyclerView.post(() -> notifyItemRemoved(position));
+
+        //mpg comparison is between adjacent elements, indexed by position
+        //we need to recalc all the mpg map for all positions when structure changes
+        loadAllItems();
     }
 
     public void deleteAllItems(){
@@ -202,9 +206,30 @@ public class FuelAdapter extends AbstractAdapter<FuelViewHolder> {
     }
 
     public void updateEntity(FuelItem entity, int position){
+        boolean isFullRefresh = false;
+
+        try{
+            FuelItem old = fuelRepository.findById(entity.getId());
+            isFullRefresh = old != null && (
+                    !old.getDate().isEqual(entity.getDate()) ||
+                            old.getKm() != entity.getKm() ||
+                            old.getLiters() != entity.getLiters() ||
+                            old.isFull() != entity.isFull()
+            );
+        } catch (ExecutionException | InterruptedException e) {
+            //ignore, bad luck on refresh
+        }
+
         fuelRepository.update(entity);
-        items.set(position, new FuelViewItem(entity.getId(), entity.getKm(), entity.getLiters(), entity.getPrice(), entity.isFull(), entity.getDate()));
-        recyclerView.post(() -> notifyItemChanged(position));
+
+        //if anything used for mpg calc has been changed, reload, otherwise simple refresh
+        if(isFullRefresh){
+            loadAllItems();
+        }
+        else{
+            items.set(position, new FuelViewItem(entity.getId(), entity.getKm(), entity.getLiters(), entity.getPrice(), entity.isFull(), entity.getDate()));
+            recyclerView.post(() -> notifyItemChanged(position));
+        }
     }
 
     public void addEntity(FuelItem entity) {

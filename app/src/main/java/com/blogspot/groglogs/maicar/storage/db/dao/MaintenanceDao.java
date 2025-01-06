@@ -16,18 +16,23 @@ public interface MaintenanceDao {
     @Query("SELECT * FROM maintenance WHERE id = :id")
     MaintenanceItem findById(Long id);
 
+    @Transaction
     @Insert
     long insert(MaintenanceItem maintenanceItem);
 
+    @Transaction
     @Query("DELETE FROM maintenance WHERE id = :id")
     void delete(long id);
 
+    @Transaction
     @Query("DELETE FROM maintenance")
     void deleteAll();
 
+    @Transaction
     @Update
     void update(MaintenanceItem maintenanceItem);
 
+    @Transaction
     @Query("SELECT * FROM maintenance ORDER BY date DESC")
     List<MaintenanceItem> getAllItemsByDateDesc();
 }

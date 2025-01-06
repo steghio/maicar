@@ -94,7 +94,7 @@ public class MaintenanceAdapter extends AbstractAdapter<MaintenanceViewHolder> {
 
         this.recyclerView.post(this::notifyDataSetChanged);
 
-        List<MaintenanceItem> entities = new ArrayList<>();
+        List<MaintenanceItem> entities;
 
         try {
             entities = maintenanceRepository.getAllItemsByDateDesc();

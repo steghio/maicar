@@ -18,6 +18,10 @@ public class FuelRepository {
         fuelDao = db.fuelDao();
     }
 
+    public FuelItem findById(Long id) throws ExecutionException, InterruptedException {
+        return AppDatabase.getDatabaseWriteExecutor().submit(() -> fuelDao.findById(id)).get();
+    }
+
     public List<FuelItem> getAllItemsByDateAsc() throws ExecutionException, InterruptedException {
         return AppDatabase.getDatabaseWriteExecutor().submit(fuelDao::getAllItemsByDateAsc).get();
     }
