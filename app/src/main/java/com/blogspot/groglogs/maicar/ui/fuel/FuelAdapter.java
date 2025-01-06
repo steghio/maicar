@@ -200,13 +200,15 @@ public class FuelAdapter extends AbstractAdapter<FuelViewHolder> {
         }
     }
 
-    public void saveEntityAndRefreshView(FuelItem entity) {
+    public void saveEntityAndRefreshView(Object entity) {
         saveEntity(entity);
         loadAllItems();
     }
 
-    public void updateEntity(FuelItem entity, int position){
+    public void updateEntity(Object o, int position){
         boolean isFullRefresh = false;
+
+        FuelItem entity = (FuelItem) o;
 
         try{
             FuelItem old = fuelRepository.findById(entity.getId());

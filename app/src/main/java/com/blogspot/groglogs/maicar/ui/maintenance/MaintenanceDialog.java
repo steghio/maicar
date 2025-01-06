@@ -1,9 +1,7 @@
 package com.blogspot.groglogs.maicar.ui.maintenance;
 
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -14,39 +12,22 @@ import com.blogspot.groglogs.maicar.R;
 import com.blogspot.groglogs.maicar.model.entity.MaintenanceItem;
 import com.blogspot.groglogs.maicar.model.entity.MaintenanceTypeEnum;
 import com.blogspot.groglogs.maicar.model.view.MaintenanceViewItem;
-import com.blogspot.groglogs.maicar.util.DateUtils;
+import com.blogspot.groglogs.maicar.ui.dialog.AbstractDialog;
 
 import java.time.LocalDate;
 
 import lombok.Getter;
 
 @Getter
-public class MaintenanceDialog {
-    private final View dialogView;
-    private long id;
-    private int position;
-    private final EditText editTextKm;
-    private final EditText editTextPrice;
+public class MaintenanceDialog extends AbstractDialog {
     private final Spinner editTextType;
-    private final EditText editTextDate;
     private final EditText editTextNotes;
-    private final MaintenanceAdapter maintenanceAdapter;
 
     public MaintenanceDialog(Context context, MaintenanceAdapter maintenanceAdapter){
-        this.id = -1;
-        this.position = -1;
+        super(context, maintenanceAdapter, R.layout.dialog_maintenance);
 
-        LayoutInflater layoutInflater = LayoutInflater.from(context);
-
-        this.dialogView = layoutInflater.inflate(R.layout.dialog_maintenance, null);
-
-        this.editTextKm = dialogView.findViewById(R.id.editTextKm);
-        this.editTextPrice = dialogView.findViewById(R.id.editTextPrice);
         this.editTextType = dialogView.findViewById(R.id.editTextType);
         this.editTextNotes = dialogView.findViewById(R.id.editTextNotes);
-        this.editTextDate = dialogView.findViewById(R.id.editTextDate);
-
-        this.maintenanceAdapter = maintenanceAdapter;
     }
 
     public void fillDialog(Context context, MaintenanceViewItem f, int position){
@@ -62,46 +43,12 @@ public class MaintenanceDialog {
         this.addDatePicker(context, f.getDate());
     }
 
-    public int getKm(){
-        return Integer.parseInt(this.editTextKm.getText().toString());
-    }
-
-    public double getPrice(){
-        return Double.parseDouble(this.editTextPrice.getText().toString());
-    }
-
-    public LocalDate getDate(){
-        return DateUtils.fromString(this.editTextDate.getText().toString());
-    }
-
     public String getNotes(){
         return this.editTextNotes.getText().toString();
     }
 
     public MaintenanceTypeEnum getMaintenanceType(){
         return MaintenanceTypeEnum.getValueFromLabel(this.editTextType.getSelectedItem().toString());
-    }
-
-    /**
-     * month in date picker is 0-based so we need to handle +/- 1 from LocalDate
-     * @param context
-     * @param date default date to display
-     */
-    public void addDatePicker(Context context, LocalDate date){
-        this.editTextDate.setText(date.toString());
-
-        this.editTextDate.setOnClickListener(v -> {
-            DatePickerDialog datePickerDialog = new DatePickerDialog(
-                    context,
-                    (view, selectedYear, selectedMonth, selectedDay) -> {
-                        this.editTextDate.setText(DateUtils.stringFrom(selectedYear, selectedMonth + 1, selectedDay));
-                    },
-                    date.getYear(),
-                    date.getMonthValue() - 1,
-                    date.getDayOfMonth()
-            );
-            datePickerDialog.show();
-        });
     }
 
     public void addTypeDropdown(Context context){
@@ -163,14 +110,14 @@ public class MaintenanceDialog {
                     else{
                         MaintenanceItem i = new MaintenanceItem(km, price, date, maintenanceType, notes);
                         i.setId(this.id);
-                        maintenanceAdapter.updateEntity(i, this.position);
+                        adapter.updateEntity(i, this.position);
 
                         Toast.makeText(d.getContext(), "Maintenance updated", Toast.LENGTH_SHORT).show();
                     }
                 }
                 else{
                     MaintenanceItem i = new MaintenanceItem(km, price, date, maintenanceType, notes);
-                    maintenanceAdapter.saveEntityAndRefreshView(i);
+                    adapter.saveEntityAndRefreshView(i);
 
                     Toast.makeText(d.getContext(), "Maintenance added", Toast.LENGTH_SHORT).show();
                 }

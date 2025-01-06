@@ -131,13 +131,15 @@ public class MaintenanceAdapter extends AbstractAdapter<MaintenanceViewHolder> {
         }
     }
 
-    public void saveEntityAndRefreshView(MaintenanceItem entity) {
+    public void saveEntityAndRefreshView(Object entity) {
         saveEntity(entity);
         loadAllItems();
     }
 
-    public void updateEntity(MaintenanceItem entity, int position){
+    public void updateEntity(Object o, int position){
         boolean isFullRefresh = false;
+
+        MaintenanceItem entity = (MaintenanceItem) o;
 
         try{
             MaintenanceItem old = maintenanceRepository.findById(entity.getId());

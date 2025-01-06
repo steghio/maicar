@@ -23,4 +23,8 @@ public abstract class AbstractAdapter<T extends RecyclerView.ViewHolder> extends
 
     public abstract void saveEntity(Object e);
 
+    public abstract void updateEntity(Object e, int position);
+
+    public abstract void saveEntityAndRefreshView(Object e);
+
 }
