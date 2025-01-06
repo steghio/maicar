@@ -1,13 +1,26 @@
 package com.blogspot.groglogs.maicar.ui.adapter;
 
+import android.content.Context;
 import android.os.Parcelable;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public interface AbstractAdapter {
+public abstract class AbstractAdapter<T extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<T> {
 
-    List<? extends Parcelable> getItems();
+    protected RecyclerView recyclerView;
 
-    String getActivityType();
+    public abstract List<? extends Parcelable> getItems();
+
+    public abstract String getActivityType();
+
+    public abstract void showInsertDialog(Context context);
+
+    public abstract void loadAllItems();
+
+    public abstract void deleteAllItems();
+
+    public abstract void saveEntity(Object e);
 
 }

@@ -22,15 +22,15 @@ import lombok.Getter;
 
 @Getter
 public class MaintenanceDialog {
-    private View dialogView;
+    private final View dialogView;
     private long id;
     private int position;
-    private EditText editTextKm;
-    private EditText editTextPrice;
-    private Spinner editTextType;
-    private EditText editTextDate;
-    private EditText editTextNotes;
-    private MaintenanceAdapter maintenanceAdapter;
+    private final EditText editTextKm;
+    private final EditText editTextPrice;
+    private final Spinner editTextType;
+    private final EditText editTextDate;
+    private final EditText editTextNotes;
+    private final MaintenanceAdapter maintenanceAdapter;
 
     public MaintenanceDialog(Context context, MaintenanceAdapter maintenanceAdapter){
         this.id = -1;
@@ -38,7 +38,6 @@ public class MaintenanceDialog {
 
         LayoutInflater layoutInflater = LayoutInflater.from(context);
 
-        //todo do not pass null for root
         this.dialogView = layoutInflater.inflate(R.layout.dialog_maintenance, null);
 
         this.editTextKm = dialogView.findViewById(R.id.editTextKm);
@@ -56,7 +55,6 @@ public class MaintenanceDialog {
 
         this.editTextKm.setText(String.valueOf(f.getKm()));
         this.editTextPrice.setText(String.valueOf(f.getPrice()));
-        //todo update does not show any value and does not select the current either
         this.editTextType.setSelection(f.getMaintenanceType().getSelection());
         this.editTextNotes.setText(String.valueOf(f.getNotes()));
         this.editTextPrice.setText(String.valueOf(f.getPrice()));
@@ -73,8 +71,7 @@ public class MaintenanceDialog {
     }
 
     public LocalDate getDate(){
-        String[] dateParts = this.editTextDate.getText().toString().split("-");
-        return LocalDate.of(Integer.parseInt(dateParts[0]), Integer.parseInt(dateParts[1]), Integer.parseInt(dateParts[2]));
+        return DateUtils.fromString(this.editTextDate.getText().toString());
     }
 
     public String getNotes(){
@@ -108,14 +105,12 @@ public class MaintenanceDialog {
     }
 
     public void addTypeDropdown(Context context){
-        // Get enum values and convert them to a String array
         MaintenanceTypeEnum[] enumValues = MaintenanceTypeEnum.values();
         String[] dropdownItems = new String[enumValues.length];
         for (int i = 0; i < enumValues.length; i++) {
             dropdownItems[i] = enumValues[i].toString();
         }
 
-        // Set up the Spinner with an ArrayAdapter
         ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, dropdownItems);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         Spinner spinner = this.dialogView.findViewById(R.id.editTextType);
@@ -175,7 +170,7 @@ public class MaintenanceDialog {
                 }
                 else{
                     MaintenanceItem i = new MaintenanceItem(km, price, date, maintenanceType, notes);
-                    maintenanceAdapter.saveEntity(i);
+                    maintenanceAdapter.saveEntityAndRefreshView(i);
 
                     Toast.makeText(d.getContext(), "Maintenance added", Toast.LENGTH_SHORT).show();
                 }

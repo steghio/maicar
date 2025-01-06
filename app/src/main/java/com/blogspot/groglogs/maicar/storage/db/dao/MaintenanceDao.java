@@ -13,19 +13,17 @@ import java.util.List;
 @Dao
 public interface MaintenanceDao {
 
+    @Query("SELECT * FROM maintenance WHERE id = :id")
+    MaintenanceItem findById(Long id);
+
     @Insert
     long insert(MaintenanceItem maintenanceItem);
 
-    @Transaction
-    default void bulkInsert(List<MaintenanceItem> maintenanceItems){
-        insertAll(maintenanceItems);
-    }
-
-    @Insert
-    void insertAll(List<MaintenanceItem> maintenanceItems);
-
     @Query("DELETE FROM maintenance WHERE id = :id")
     void delete(long id);
+
+    @Query("DELETE FROM maintenance")
+    void deleteAll();
 
     @Update
     void update(MaintenanceItem maintenanceItem);

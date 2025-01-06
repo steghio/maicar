@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import com.blogspot.groglogs.maicar.R;
 import com.blogspot.groglogs.maicar.activity.CreateDocumentActivity;
+import com.blogspot.groglogs.maicar.util.DateUtils;
 
 import java.time.LocalDate;
 
@@ -46,7 +47,6 @@ public class FuelViewItem extends AbstractViewItem {
         return R.drawable.ic_euro_price_24dp;
     }
 
-    // Parcelable implementation
     @Override
     public int describeContents() {
         return 0;
@@ -73,7 +73,7 @@ public class FuelViewItem extends AbstractViewItem {
         date = LocalDate.ofEpochDay(in.readLong());
     }
 
-    public static final Parcelable.Creator<FuelViewItem> CREATOR = new Parcelable.Creator<FuelViewItem>() {
+    public static final Parcelable.Creator<FuelViewItem> CREATOR = new Parcelable.Creator<>() {
         @Override
         public FuelViewItem createFromParcel(Parcel source) {
             return new FuelViewItem(source);
@@ -98,14 +98,12 @@ public class FuelViewItem extends AbstractViewItem {
     public static FuelViewItem fromCsv(String csv){
         String[] split = csv.split(CreateDocumentActivity.CSV_SEPARATOR);
 
-        String[] dateString = split[6].split("-");
-
         FuelViewItem i = new FuelViewItem(null,
                 Integer.parseInt(split[1]),
                 Double.parseDouble(split[2]),
                 Double.parseDouble(split[3]),
                 Boolean.parseBoolean(split[5]),
-                LocalDate.of(Integer.parseInt(dateString[0]), Integer.parseInt(dateString[1]), Integer.parseInt(dateString[2]))
+                DateUtils.fromString(split[6])
         );
 
         if(i.getLiters() > 0) {

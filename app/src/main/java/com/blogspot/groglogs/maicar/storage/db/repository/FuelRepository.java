@@ -26,12 +26,12 @@ public class FuelRepository {
         return AppDatabase.getDatabaseWriteExecutor().submit(() -> fuelDao.insert(entity)).get();
     }
 
-    public void insertAll(List<FuelItem> entities){
-        AppDatabase.getDatabaseWriteExecutor().execute(() -> fuelDao.bulkInsert(entities));
-    }
-
     public void delete(long id) {
         AppDatabase.getDatabaseWriteExecutor().execute(() -> fuelDao.delete(id));
+    }
+
+    public void deleteAll() {
+        AppDatabase.getDatabaseWriteExecutor().execute(fuelDao::deleteAll);
     }
 
     public void update(FuelItem entity) {

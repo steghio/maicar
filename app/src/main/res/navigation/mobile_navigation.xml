@@ -9,11 +9,11 @@
         android:id="@+id/navigation_fuel"
         android:name="com.blogspot.groglogs.maicar.ui.fuel.FuelFragment"
         android:label="@string/title_fuel"
-        tools:layout="@layout/fragment_fuel" />
+        tools:layout="@layout/fragment" />
 
     <fragment
         android:id="@+id/navigation_maintenance"
         android:name="com.blogspot.groglogs.maicar.ui.maintenance.MaintenanceFragment"
         android:label="@string/title_maintenance"
-        tools:layout="@layout/fragment_maintenance" />
+        tools:layout="@layout/fragment" />
 </navigation>

@@ -35,7 +35,7 @@ public enum MaintenanceTypeEnum {
                 return R.drawable.ic_wash_24dp;
             }
             default -> {
-                return -1;
+                return R.drawable.ic_wrench_24dp;
             }
         }
     }

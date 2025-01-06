@@ -27,7 +27,6 @@ public class CreateDocumentActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Register the ActivityResultLauncher using OpenDocument contract
         createDocumentLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(), result -> {
                     if (result.getResultCode() == RESULT_OK) {
@@ -41,11 +40,10 @@ public class CreateDocumentActivity extends AppCompatActivity {
                         }
                     }
                     else {
-                        // Inform the user if no file was selected
                         Toast.makeText(CreateDocumentActivity.this, "Error creating file", Toast.LENGTH_SHORT).show();
                     }
 
-                    // Finish the current activity and return to the previous screen
+                    //finish the current activity and return to the previous screen
                     finish();
                 });
 
@@ -61,7 +59,6 @@ public class CreateDocumentActivity extends AppCompatActivity {
                 LocalDateTime.now().toString() +
                 ".csv");
 
-        // Launch the document creation flow
         createDocumentLauncher.launch(intent);
     }
 

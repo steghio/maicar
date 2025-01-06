@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import com.blogspot.groglogs.maicar.R;
 import com.blogspot.groglogs.maicar.activity.CreateDocumentActivity;
 import com.blogspot.groglogs.maicar.model.entity.MaintenanceTypeEnum;
+import com.blogspot.groglogs.maicar.util.DateUtils;
 import com.blogspot.groglogs.maicar.util.StringUtils;
 
 import java.time.LocalDate;
@@ -47,7 +48,6 @@ public class MaintenanceViewItem extends AbstractViewItem {
         return this.maintenanceType == null ? MaintenanceTypeEnum.OTHER : this.maintenanceType;
     }
 
-    // Parcelable implementation
     @Override
     public int describeContents() {
         return 0;
@@ -72,7 +72,7 @@ public class MaintenanceViewItem extends AbstractViewItem {
         notes = in.readString();
     }
 
-    public static final Parcelable.Creator<MaintenanceViewItem> CREATOR = new Parcelable.Creator<MaintenanceViewItem>() {
+    public static final Parcelable.Creator<MaintenanceViewItem> CREATOR = new Parcelable.Creator<>() {
         @Override
         public MaintenanceViewItem createFromParcel(Parcel source) {
             return new MaintenanceViewItem(source);
@@ -96,12 +96,10 @@ public class MaintenanceViewItem extends AbstractViewItem {
     public static MaintenanceViewItem fromCsv(String csv){
         String[] split = csv.split(CreateDocumentActivity.CSV_SEPARATOR);
 
-        String[] dateString = split[3].split("-");
-
         return new MaintenanceViewItem(null,
                 Integer.parseInt(split[1]),
                 Double.parseDouble(split[2]),
-                LocalDate.of(Integer.parseInt(dateString[0]), Integer.parseInt(dateString[1]), Integer.parseInt(dateString[2])),
+                DateUtils.fromString(split[3]),
                 MaintenanceTypeEnum.valueOf(split[4]),
                 NULL_PLACEHOLDER.equals(split[5]) ? "" : split[5]);
     }

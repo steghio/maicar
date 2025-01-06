@@ -6,7 +6,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -28,8 +27,7 @@ import java.util.concurrent.ExecutionException;
 
 import lombok.Getter;
 
-//todo refresh on actions
-public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> implements AbstractAdapter {
+public class FuelAdapter extends AbstractAdapter<FuelViewHolder> {
 
     public static final String ACTIVITY_TYPE = "FUEL";
 
@@ -38,9 +36,7 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> implements
     //key = item position, value = mpg for item (if full tank)
     private Map<Integer,Double> mpgMap;
 
-    private FuelRepository fuelRepository;
-
-    private RecyclerView recyclerView;
+    private final FuelRepository fuelRepository;
 
     public FuelAdapter(Application application, RecyclerView recyclerView) {
         this.items = new ArrayList<>();
@@ -105,25 +101,17 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> implements
             holder.getMpgTextView().setText(StringUtils.decimal2String1Precision(mpg));
         }
 
-        ImageButton editButton = holder.getEditButton();
-
-        if(editButton != null){
-            editButton.setOnClickListener(view -> {
+        holder.getEditButton().setOnClickListener(view -> {
                 Toast.makeText(view.getContext(), "EDIT ID: " + item.getId() + " - POS: " + holder.getAdapterPosition(), Toast.LENGTH_SHORT).show();
 
                 showUpdateDialog(view.getContext(), item, holder.getAdapterPosition());
             });
-        }
 
-        ImageButton deleteButton = holder.getDeleteButton();
-
-        if(deleteButton != null){
-            deleteButton.setOnClickListener(view -> {
+        holder.getDeleteButton().setOnClickListener(view -> {
                 Toast.makeText(view.getContext(), "DELETE ID: " + item.getId() + " - POS: " + holder.getAdapterPosition(), Toast.LENGTH_SHORT).show();
 
                 deleteItem(item, holder.getAdapterPosition());
             });
-        }
     }
 
     @Override
@@ -136,7 +124,7 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> implements
         this.items = new ArrayList<>();
         this.mpgMap = new HashMap<>();
 
-        this.recyclerView.post(() -> notifyDataSetChanged());
+        this.recyclerView.post(this::notifyDataSetChanged);
 
         List<FuelItem> entities = loadAndCalculateMpg();
 
@@ -148,10 +136,11 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> implements
     private List<FuelItem> loadAndCalculateMpg(){
         List<FuelItem> entities = new ArrayList<>();
 
-        //todo handle properly
         try {
             entities = fuelRepository.getAllItemsByDateAsc();
         } catch (ExecutionException | InterruptedException e) {
+            Toast.makeText(recyclerView.getContext(), "Error loading items", Toast.LENGTH_SHORT).show();
+
             throw new RuntimeException(e);
         }
 
@@ -187,34 +176,39 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> implements
 
     public void deleteItem(FuelViewItem item, int position){
         fuelRepository.delete(item.getId());
-
         items.remove(position);
-
         recyclerView.post(() -> notifyItemRemoved(position));
     }
 
-    public void saveEntity(FuelItem entity) {
-        //todo handle properly
+    public void deleteAllItems(){
+        fuelRepository.deleteAll();
+        items.clear();
+        recyclerView.post(this::notifyDataSetChanged);
+    }
+
+    public void saveEntity(Object entity) {
         try {
-            fuelRepository.insert(entity);
+            fuelRepository.insert((FuelItem) entity);
         } catch (ExecutionException | InterruptedException e) {
+            Toast.makeText(recyclerView.getContext(), "Error saving item", Toast.LENGTH_SHORT).show();
+
             throw new RuntimeException(e);
         }
+    }
 
+    public void saveEntityAndRefreshView(FuelItem entity) {
+        saveEntity(entity);
         loadAllItems();
     }
 
     public void updateEntity(FuelItem entity, int position){
         fuelRepository.update(entity);
-
         items.set(position, new FuelViewItem(entity.getId(), entity.getKm(), entity.getLiters(), entity.getPrice(), entity.isFull(), entity.getDate()));
-
         recyclerView.post(() -> notifyItemChanged(position));
     }
 
     public void addEntity(FuelItem entity) {
         items.add(new FuelViewItem(entity.getId(), entity.getKm(), entity.getLiters(), entity.getPrice(), entity.isFull(), entity.getDate()));
-
         recyclerView.post(() -> notifyItemInserted(items.size() - 1));
     }
 
@@ -223,7 +217,6 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> implements
 
         fuelDialog.addDatePicker(context, LocalDate.now());
 
-        //prepare popup input
         AlertDialog dialog = new AlertDialog.Builder(context)
                 .setTitle("Enter Refuel Details")
                 .setView(fuelDialog.getDialogView())
@@ -231,7 +224,6 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> implements
                 .setNegativeButton("Cancel", null)
                 .create();
 
-        //make it so the save button does validation and shows errors until correct, then it saves and closes
         dialog.setOnShowListener(dialogInterface -> {
             final AlertDialog d = (AlertDialog) dialogInterface;
             d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(fuelDialog.getSubmitButtonWithValidation(d, false));
@@ -245,7 +237,6 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> implements
 
         fuelDialog.fillDialog(context, f, position);
 
-        //prepare popup input
         AlertDialog dialog = new AlertDialog.Builder(context)
                 .setTitle("Edit Refuel Details")
                 .setView(fuelDialog.getDialogView())
@@ -253,7 +244,6 @@ public class FuelAdapter extends RecyclerView.Adapter<FuelViewHolder> implements
                 .setNegativeButton("Cancel", null)
                 .create();
 
-        //make it so the save button does validation and shows errors until correct, then it saves and closes
         dialog.setOnShowListener(dialogInterface -> {
             final AlertDialog d = (AlertDialog) dialogInterface;
             d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(fuelDialog.getSubmitButtonWithValidation(d, true));

@@ -3,7 +3,6 @@ package com.blogspot.groglogs.maicar.storage.db.dao;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
-import androidx.room.Transaction;
 import androidx.room.Update;
 
 import com.blogspot.groglogs.maicar.model.entity.FuelItem;
@@ -16,16 +15,11 @@ public interface FuelDao {
     @Insert
     long insert(FuelItem fuelItem);
 
-    @Transaction
-    default void bulkInsert(List<FuelItem> fuelItems){
-        insertAll(fuelItems);
-    }
-
-    @Insert
-    void insertAll(List<FuelItem> fuelItems);
-
     @Query("DELETE FROM fuel WHERE id = :id")
     void delete(long id);
+
+    @Query("DELETE FROM fuel")
+    void deleteAll();
 
     @Update
     void update(FuelItem fuelItem);

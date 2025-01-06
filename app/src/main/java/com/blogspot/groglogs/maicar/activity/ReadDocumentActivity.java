@@ -29,23 +29,20 @@ public class ReadDocumentActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Register the ActivityResultLauncher using OpenDocument contract
         readDocumentLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == RESULT_OK) {
                         Uri fileUri = result.getData().getData();
                         if (fileUri != null) {
-                            // Process the selected CSV file
                             readFromFile(fileUri);
                         }
                     }
                     else {
-                        // Inform the user if no file was selected
                         Toast.makeText(ReadDocumentActivity.this, "No file selected", Toast.LENGTH_SHORT).show();
                     }
 
-                    // Finish the current activity and return to the previous screen
+                    //finish the current activity and return to the previous screen
                     finish();
                 }
         );
@@ -81,34 +78,42 @@ public class ReadDocumentActivity extends AppCompatActivity {
     }
 
     private void readFuelItems(BufferedReader reader) throws IOException {
+
+        FuelFragment.getAdapter().deleteAllItems();
+
         String line;
 
         while ((line = reader.readLine()) != null) {
 
             FuelViewItem item = FuelViewItem.fromCsv(line);
 
-            //todo if we have id, update, otherwise save
             FuelItem f = new FuelItem(item.getKm(), item.getLiters(), item.getPrice(), item.isFull(), item.getDate());
 
-            FuelFragment.getFuelAdapter().saveEntity(f);
+            FuelFragment.getAdapter().saveEntity(f);
         }
 
         Toast.makeText(this, "Fuel items imported successfully", Toast.LENGTH_SHORT).show();
+
+        FuelFragment.getAdapter().loadAllItems();
     }
 
     private void readMaintenanceItems(BufferedReader reader) throws IOException {
+
+        MaintenanceFragment.getAdapter().deleteAllItems();
+
         String line;
 
         while ((line = reader.readLine()) != null) {
 
             MaintenanceViewItem item = MaintenanceViewItem.fromCsv(line);
 
-            //todo if we have id, update, otherwise save
             MaintenanceItem f = new MaintenanceItem(item.getKm(), item.getPrice(), item.getDate(), item.getMaintenanceType(), item.getNotes());
 
-            MaintenanceFragment.getMaintenanceAdapter().saveEntity(f);
+            MaintenanceFragment.getAdapter().saveEntity(f);
         }
 
         Toast.makeText(this, "Maintenance items imported successfully", Toast.LENGTH_SHORT).show();
+
+        MaintenanceFragment.getAdapter().loadAllItems();
     }
 }

@@ -21,16 +21,16 @@ import lombok.Getter;
 @Getter
 public class FuelDialog {
 
-    private View dialogView;
+    private final View dialogView;
     private long id;
     private int position;
-    private EditText editTextKm;
-    private EditText editTextLiters;
-    private EditText editTextPrice;
-    private EditText editTextPriceLiter;
-    private SwitchMaterial editToggleFull;
-    private EditText editTextDate;
-    private FuelAdapter fuelAdapter;
+    private final EditText editTextKm;
+    private final EditText editTextLiters;
+    private final EditText editTextPrice;
+    private final EditText editTextPriceLiter;
+    private final SwitchMaterial editToggleFull;
+    private final EditText editTextDate;
+    private final FuelAdapter fuelAdapter;
 
     public FuelDialog(Context context, FuelAdapter fuelAdapter){
         this.id = -1;
@@ -38,7 +38,6 @@ public class FuelDialog {
 
         LayoutInflater layoutInflater = LayoutInflater.from(context);
 
-        //todo do not pass null for root
         this.dialogView = layoutInflater.inflate(R.layout.dialog_fuel, null);
 
         this.editTextKm = dialogView.findViewById(R.id.editTextKm);
@@ -83,8 +82,7 @@ public class FuelDialog {
     }
 
     public LocalDate getDate(){
-        String[] dateParts = this.editTextDate.getText().toString().split("-");
-        return LocalDate.of(Integer.parseInt(dateParts[0]), Integer.parseInt(dateParts[1]), Integer.parseInt(dateParts[2]));
+        return DateUtils.fromString(this.editTextDate.getText().toString());
     }
 
     /**
@@ -178,7 +176,7 @@ public class FuelDialog {
                 }
                 else{
                     FuelItem i = new FuelItem(km, liters, price, full, date);
-                    fuelAdapter.saveEntity(i);
+                    fuelAdapter.saveEntityAndRefreshView(i);
 
                     Toast.makeText(d.getContext(), "Refuel added", Toast.LENGTH_SHORT).show();
                 }
