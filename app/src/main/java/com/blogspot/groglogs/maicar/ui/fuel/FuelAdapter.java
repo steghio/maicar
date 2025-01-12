@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.blogspot.groglogs.maicar.R;
+import com.blogspot.groglogs.maicar.model.entity.MaintenanceTypeEnum;
 import com.blogspot.groglogs.maicar.model.view.FuelViewItem;
 import com.blogspot.groglogs.maicar.model.entity.FuelItem;
 import com.blogspot.groglogs.maicar.storage.db.repository.FuelRepository;
@@ -282,4 +283,6 @@ public class FuelAdapter extends AbstractAdapter<FuelViewHolder> {
     public String getActivityType(){
         return ACTIVITY_TYPE;
     }
+
+    public void filter(MaintenanceTypeEnum position){}
 }

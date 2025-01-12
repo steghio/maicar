@@ -5,6 +5,8 @@ import android.os.Parcelable;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.blogspot.groglogs.maicar.model.entity.MaintenanceTypeEnum;
+
 import java.util.List;
 
 public abstract class AbstractAdapter<T extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<T> {
@@ -27,4 +29,5 @@ public abstract class AbstractAdapter<T extends RecyclerView.ViewHolder> extends
 
     public abstract void saveEntityAndRefreshView(Object e);
 
+    public abstract void filter(MaintenanceTypeEnum position);
 }

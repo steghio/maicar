@@ -26,12 +26,12 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import lombok.Getter;
 
 public abstract class AbstractFragment extends Fragment {
-    //todo better than this, used in read document activity for import
+
     @Getter
     protected static AbstractAdapter adapter;
 
     protected View buildView(LayoutInflater inflater, ViewGroup container, boolean isFuel){
-        View view = inflater.inflate(R.layout.fragment, container, false);
+        View view = inflater.inflate(isFuel ? R.layout.fragment_fuel : R.layout.fragment_maintenance, container, false);
 
         RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
@@ -45,7 +45,11 @@ public abstract class AbstractFragment extends Fragment {
 
         loadAllItems();
 
-        requireActivity().addMenuProvider(new TopMenu(requireContext(), adapter), getViewLifecycleOwner(), Lifecycle.State.RESUMED);
+        TopMenu topMenu = new TopMenu(requireContext(), adapter, isFuel ? R.menu.top_menu_fuel : R.menu.top_menu_maintenance);
+        if(!isFuel){
+            topMenu.setContextView(view);
+        }
+        requireActivity().addMenuProvider(topMenu, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
         requireActivity().invalidateOptionsMenu();
 
         return view;

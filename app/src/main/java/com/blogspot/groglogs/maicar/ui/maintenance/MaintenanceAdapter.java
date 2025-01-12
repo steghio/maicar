@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.blogspot.groglogs.maicar.R;
 import com.blogspot.groglogs.maicar.model.entity.MaintenanceItem;
+import com.blogspot.groglogs.maicar.model.entity.MaintenanceTypeEnum;
 import com.blogspot.groglogs.maicar.model.view.MaintenanceViewItem;
 import com.blogspot.groglogs.maicar.storage.db.repository.MaintenanceRepository;
 import com.blogspot.groglogs.maicar.ui.adapter.AbstractAdapter;
@@ -25,18 +26,19 @@ import java.util.concurrent.ExecutionException;
 
 import lombok.Getter;
 
-//todo add filtering on maintenanceType logic
 public class MaintenanceAdapter extends AbstractAdapter<MaintenanceViewHolder> {
 
     public static final String ACTIVITY_TYPE = "MAINTENANCE";
 
     @Getter
     private List<MaintenanceViewItem> items;
+    private List<MaintenanceViewItem> filteredItems;
 
     private final MaintenanceRepository maintenanceRepository;
 
     public MaintenanceAdapter(Application application, RecyclerView recyclerView) {
         this.items = new ArrayList<>();
+        this.filteredItems = new ArrayList<>();
         this.maintenanceRepository = new MaintenanceRepository(application);
         this.recyclerView = recyclerView;
     }
@@ -53,7 +55,7 @@ public class MaintenanceAdapter extends AbstractAdapter<MaintenanceViewHolder> {
     //todo use strings with placeholders
     @Override
     public void onBindViewHolder(@NonNull MaintenanceViewHolder holder, int position) {
-        MaintenanceViewItem item = items.get(position);
+        MaintenanceViewItem item = filteredItems.get(position);
         holder.getKmIconImageView().setImageResource(item.getKmIconResId());
         holder.getKmTextView().setText(item.getKm() + " km");
         holder.getTypeIconImageView().setImageResource(item.getTypeIconResId());
@@ -86,11 +88,12 @@ public class MaintenanceAdapter extends AbstractAdapter<MaintenanceViewHolder> {
 
     @Override
     public int getItemCount() {
-        return items.size();
+        return filteredItems.size();
     }
 
     public void loadAllItems(){
         this.items.clear();
+        this.filteredItems.clear();
 
         this.recyclerView.post(this::notifyDataSetChanged);
 
@@ -109,14 +112,30 @@ public class MaintenanceAdapter extends AbstractAdapter<MaintenanceViewHolder> {
         }
     }
 
+    private int getFullListItemPos(MaintenanceViewItem item){
+        int itemPos = 0;
+        for(; itemPos < items.size(); itemPos++){
+            if(items.get(itemPos).getId().equals(item.getId())){
+                break;
+            }
+        }
+
+        return itemPos;
+    }
+
     public void deleteItem(MaintenanceViewItem item, int position){
         maintenanceRepository.delete(item.getId());
-        items.remove(position);
+        filteredItems.remove(position);
+
+        //remove also from full list
+        items.remove(getFullListItemPos(item));
+
         recyclerView.post(() -> notifyItemRemoved(position));
     }
 
     public void deleteAllItems(){
         maintenanceRepository.deleteAll();
+        filteredItems.clear();
         items.clear();
         recyclerView.post(this::notifyDataSetChanged);
     }
@@ -155,14 +174,21 @@ public class MaintenanceAdapter extends AbstractAdapter<MaintenanceViewHolder> {
             loadAllItems();
         }
         else {
-            items.set(position, new MaintenanceViewItem(entity.getId(), entity.getKm(), entity.getPrice(), entity.getDate(), entity.getMaintenanceType(), entity.getNotes()));
+            MaintenanceViewItem i = new MaintenanceViewItem(entity.getId(), entity.getKm(), entity.getPrice(), entity.getDate(), entity.getMaintenanceType(), entity.getNotes());
+            filteredItems.set(position, i);
+
+            //update also in full list
+            items.set(getFullListItemPos(i), i);
+
             recyclerView.post(() -> notifyItemChanged(position));
         }
     }
 
     public void addEntity(MaintenanceItem entity) {
-        items.add(new MaintenanceViewItem(entity.getId(), entity.getKm(), entity.getPrice(), entity.getDate(), entity.getMaintenanceType(), entity.getNotes()));
-        recyclerView.post(() -> notifyItemInserted(items.size() - 1));
+        MaintenanceViewItem i = new MaintenanceViewItem(entity.getId(), entity.getKm(), entity.getPrice(), entity.getDate(), entity.getMaintenanceType(), entity.getNotes());
+        filteredItems.add(i);
+        items.add(i);
+        recyclerView.post(() -> notifyItemInserted(filteredItems.size() - 1));
     }
 
     public void showInsertDialog(Context context) {
@@ -209,5 +235,25 @@ public class MaintenanceAdapter extends AbstractAdapter<MaintenanceViewHolder> {
 
     public String getActivityType(){
         return ACTIVITY_TYPE;
+    }
+
+    public void filter(MaintenanceTypeEnum val){
+        Toast.makeText(recyclerView.getContext(), "FILTER: " + val, Toast.LENGTH_SHORT).show();
+
+        if(val == null){
+            filteredItems = new ArrayList<>(items);
+        }
+        else{
+            //make a new array otherwise it is immutable if done with stream (and we do not copy over again)
+            filteredItems = new ArrayList<>();
+
+            for(MaintenanceViewItem item : items){
+                if(item.getMaintenanceType() == val){
+                    filteredItems.add(item);
+                }
+            }
+        }
+
+        recyclerView.post(this::notifyDataSetChanged);
     }
 }

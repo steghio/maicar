@@ -10,12 +10,14 @@
     <string name="dialog_price_liter">Price per Liter:</string>
     <string name="dialog_maintenance_type">Type:</string>
     <string name="dialog_notes">Notes:</string>
+    <string name="desc_add">add</string>
     <string name="desc_km">km</string>
     <string name="desc_liters">liters</string>
     <string name="desc_price">price</string>
     <string name="desc_mpg">mpg</string>
     <string name="desc_edit">edit</string>
     <string name="desc_delete">delete</string>
+    <string name="menu_filter">Filter</string>
     <string name="menu_import">Import</string>
     <string name="menu_export">Export</string>
 </resources>
