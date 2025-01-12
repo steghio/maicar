@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.blogspot.groglogs.maicar.R;
 
-//todo better way than label for display and get value
+//todo dropdown shows label and not value so we convert back and forth, maybe there is a better way
 public enum MaintenanceTypeEnum {
     TYRES,
     CHECK,

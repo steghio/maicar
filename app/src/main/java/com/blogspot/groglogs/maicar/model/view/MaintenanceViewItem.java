@@ -18,7 +18,7 @@ import lombok.Data;
 @Data
 public class MaintenanceViewItem extends AbstractViewItem {
 
-    //todo better way than this
+    //todo maybe better way than this for csv null values
     private static final String NULL_PLACEHOLDER = "#null#";
 
     private Long id;

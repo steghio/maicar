@@ -23,7 +23,7 @@ public class MaintenanceViewHolder extends AbstractViewHolder {
         this.typeIconImageView = itemView.findViewById(R.id.typeIconImageView);
         this.typeTextView = itemView.findViewById(R.id.typeTextView);
         this.notesTextView = itemView.findViewById(R.id.notesTextView);
-        //todo make notes break in multiline text properly
+        //todo make notes break in multiline text dynamically instead that with the fixes ems in xml config
         this.notesTextView.setSingleLine(false);
         this.notesTextView.setBreakStrategy(LineBreaker.BREAK_STRATEGY_HIGH_QUALITY);
         this.notesTextView.setEllipsize(null);

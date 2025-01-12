@@ -30,7 +30,6 @@ public abstract class AbstractFragment extends Fragment {
     @Getter
     protected static AbstractAdapter adapter;
 
-    //todo better way to indicate which adapter we need
     protected View buildView(LayoutInflater inflater, ViewGroup container, boolean isFuel){
         View view = inflater.inflate(R.layout.fragment, container, false);
 

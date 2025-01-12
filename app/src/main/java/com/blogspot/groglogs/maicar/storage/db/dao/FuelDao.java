@@ -32,7 +32,7 @@ public interface FuelDao {
     @Update
     void update(FuelItem fuelItem);
 
-    //todo what if 2 fuel in same day?
+    //todo 2 fuel in same day would be sorted by insertion time..
     @Transaction
     @Query("SELECT * FROM fuel ORDER BY date ASC")
     List<FuelItem> getAllItemsByDateAsc();
