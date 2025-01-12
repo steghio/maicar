@@ -20,4 +20,9 @@
     <string name="menu_filter">Filter</string>
     <string name="menu_import">Import</string>
     <string name="menu_export">Export</string>
+    <string name="display_km">%1s km</string>
+    <string name="display_liters">%1.2f L</string>
+    <string name="display_price2dec">%1.2f €</string>
+    <string name="display_price4dec">%1.4f €</string>
+    <string name="display_priceL4dec">%1.4f €/L</string>
 </resources>

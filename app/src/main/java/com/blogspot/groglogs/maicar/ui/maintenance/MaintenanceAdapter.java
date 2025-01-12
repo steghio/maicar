@@ -18,6 +18,7 @@ import com.blogspot.groglogs.maicar.model.entity.MaintenanceTypeEnum;
 import com.blogspot.groglogs.maicar.model.view.MaintenanceViewItem;
 import com.blogspot.groglogs.maicar.storage.db.repository.MaintenanceRepository;
 import com.blogspot.groglogs.maicar.ui.adapter.AbstractAdapter;
+import com.blogspot.groglogs.maicar.util.StringUtils;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class MaintenanceAdapter extends AbstractAdapter<MaintenanceViewHolder> {
     public static final String ACTIVITY_TYPE = "MAINTENANCE";
 
     @Getter
-    private List<MaintenanceViewItem> items;
+    private final List<MaintenanceViewItem> items;
     private List<MaintenanceViewItem> filteredItems;
 
     private final MaintenanceRepository maintenanceRepository;
@@ -52,16 +53,15 @@ public class MaintenanceAdapter extends AbstractAdapter<MaintenanceViewHolder> {
         return new MaintenanceViewHolder(view);
     }
 
-    //todo use strings with placeholders
     @Override
     public void onBindViewHolder(@NonNull MaintenanceViewHolder holder, int position) {
         MaintenanceViewItem item = filteredItems.get(position);
         holder.getKmIconImageView().setImageResource(item.getKmIconResId());
-        holder.getKmTextView().setText(item.getKm() + " km");
+        holder.getKmTextView().setText(recyclerView.getContext().getString(R.string.display_km, StringUtils.formatIntegerWithThousandSeparator(item.getKm())));
         holder.getTypeIconImageView().setImageResource(item.getTypeIconResId());
         holder.getTypeTextView().setText(item.getTypeText());
         holder.getPriceIconImageView().setImageResource(item.getPriceIconResId());
-        holder.getPriceTextView().setText(item.getPrice() + " €");
+        holder.getPriceTextView().setText(recyclerView.getContext().getString(R.string.display_price2dec, item.getPrice()));
         holder.getNotesTextView().setText(item.getNotes());
         holder.getDateTextView().setText(item.getDate().toString());
 

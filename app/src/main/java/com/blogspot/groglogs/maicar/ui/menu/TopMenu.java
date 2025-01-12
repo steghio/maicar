@@ -30,6 +30,7 @@ import lombok.Setter;
 public class TopMenu implements MenuProvider {
 
     private final Context context;
+    @SuppressWarnings("rawtypes")
     private final AbstractAdapter adapter;
     private final int menuResId;
     @Setter
@@ -82,9 +83,7 @@ public class TopMenu implements MenuProvider {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                // No action needed
-            }
+            public void onNothingSelected(AdapterView<?> parent) {}
         });
 
         filterSpinner.setVisibility(View.VISIBLE);
@@ -96,6 +95,7 @@ public class TopMenu implements MenuProvider {
         context.startActivity(intent);
     }
 
+    @SuppressWarnings("unchecked")
     private void exportToFile(){
         Intent intent = new Intent(context, CreateDocumentActivity.class);
         intent.putParcelableArrayListExtra(CreateDocumentActivity.DATA, (ArrayList<? extends Parcelable>) adapter.getItems());

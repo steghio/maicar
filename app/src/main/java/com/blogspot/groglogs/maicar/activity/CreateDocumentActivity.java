@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.blogspot.groglogs.maicar.model.view.AbstractViewItem;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,9 +30,10 @@ public class CreateDocumentActivity extends AppCompatActivity {
                 new ActivityResultContracts.StartActivityForResult(), result -> {
                     if (result.getResultCode() == RESULT_OK) {
                         Intent data = result.getData();
+
                         if (data != null) {
                             Uri uri = data.getData();
-                            // Once the user selects a file, write content to it
+
                             if (uri != null) {
                                 writeToFile(uri);
                             }
@@ -63,8 +63,7 @@ public class CreateDocumentActivity extends AppCompatActivity {
     }
 
     private void writeToFile(Uri uri) {
-        try {
-            OutputStream outputStream = getContentResolver().openOutputStream(uri);
+        try(OutputStream outputStream = getContentResolver().openOutputStream(uri)){
 
             List<AbstractViewItem> items = getIntent().getParcelableArrayListExtra(DATA, AbstractViewItem.class);
 
@@ -72,8 +71,7 @@ public class CreateDocumentActivity extends AppCompatActivity {
                 outputStream.write(item.toCsv().getBytes());
             }
 
-            outputStream.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             Toast.makeText(this, "Failed to write the file", Toast.LENGTH_SHORT).show();
         }
     }

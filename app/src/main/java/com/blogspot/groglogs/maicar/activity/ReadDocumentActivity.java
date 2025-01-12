@@ -34,6 +34,7 @@ public class ReadDocumentActivity extends AppCompatActivity {
                 result -> {
                     if (result.getResultCode() == RESULT_OK) {
                         Uri fileUri = result.getData().getData();
+
                         if (fileUri != null) {
                             readFromFile(fileUri);
                         }

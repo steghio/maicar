@@ -26,8 +26,8 @@ public class FuelRepository {
         return AppDatabase.getDatabaseWriteExecutor().submit(fuelDao::getAllItemsByDateAsc).get();
     }
 
-    public long insert(FuelItem entity) throws ExecutionException, InterruptedException {
-        return AppDatabase.getDatabaseWriteExecutor().submit(() -> fuelDao.insert(entity)).get();
+    public void insert(FuelItem entity) throws ExecutionException, InterruptedException {
+        AppDatabase.getDatabaseWriteExecutor().execute(() -> fuelDao.insert(entity));
     }
 
     public void delete(long id) {

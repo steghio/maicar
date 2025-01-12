@@ -57,17 +57,16 @@ public class FuelAdapter extends AbstractAdapter<FuelViewHolder> {
         return new FuelViewHolder(view);
     }
 
-    //todo use strings with placeholders
     @Override
     public void onBindViewHolder(@NonNull FuelViewHolder holder, int position) {
         FuelViewItem item = items.get(position);
         holder.getKmIconImageView().setImageResource(item.getKmIconResId());
-        holder.getKmTextView().setText(item.getKm() + " km");
+        holder.getKmTextView().setText(recyclerView.getContext().getString(R.string.display_km, StringUtils.formatIntegerWithThousandSeparator(item.getKm())));
         holder.getLiterIconImageView().setImageResource(item.getFuelIconResId());
-        holder.getLiterTextView().setText(item.getLiters() + " L");
+        holder.getLiterTextView().setText(recyclerView.getContext().getString(R.string.display_liters, item.getLiters()));
         holder.getPriceIconImageView().setImageResource(item.getPriceIconResId());
-        holder.getPriceTextView().setText(item.getPrice() + " €");
-        holder.getPriceLiterTextView().setText("€/L " + StringUtils.decimal2String4Precision(item.getPricePerLiter()));
+        holder.getPriceTextView().setText(recyclerView.getContext().getString(R.string.display_price4dec, item.getPrice()));
+        holder.getPriceLiterTextView().setText(recyclerView.getContext().getString(R.string.display_priceL4dec, item.getPricePerLiter()));
         holder.getDateTextView().setText(item.getDate().toString());
 
         //previous item in sorted desc list

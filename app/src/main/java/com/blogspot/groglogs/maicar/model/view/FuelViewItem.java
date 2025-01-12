@@ -9,9 +9,11 @@ import com.blogspot.groglogs.maicar.util.DateUtils;
 
 import java.time.LocalDate;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class FuelViewItem extends AbstractViewItem {
 
     private Long id;

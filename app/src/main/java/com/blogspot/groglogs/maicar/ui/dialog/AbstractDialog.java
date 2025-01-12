@@ -15,6 +15,7 @@ import java.time.LocalDate;
 
 import lombok.Getter;
 
+@SuppressWarnings("rawtypes")
 public abstract class AbstractDialog {
     @Getter
     protected final View dialogView;
@@ -54,7 +55,7 @@ public abstract class AbstractDialog {
 
     /**
      * month in date picker is 0-based so we need to handle +/- 1 from LocalDate
-     * @param context
+     * @param context the context
      * @param date default date to display
      */
     public void addDatePicker(Context context, LocalDate date){
@@ -63,9 +64,10 @@ public abstract class AbstractDialog {
         this.editTextDate.setOnClickListener(v -> {
             DatePickerDialog datePickerDialog = new DatePickerDialog(
                     context,
-                    (view, selectedYear, selectedMonth, selectedDay) -> {
-                        this.editTextDate.setText(DateUtils.stringFrom(selectedYear, selectedMonth + 1, selectedDay));
-                    },
+                    (view, selectedYear, selectedMonth, selectedDay) -> this.editTextDate.setText(
+                            DateUtils.stringFrom(selectedYear,
+                                    selectedMonth + 1,
+                                    selectedDay)),
                     date.getYear(),
                     date.getMonthValue() - 1,
                     date.getDayOfMonth()

@@ -26,8 +26,8 @@ public class MaintenanceRepository {
         return AppDatabase.getDatabaseWriteExecutor().submit(maintenanceDao::getAllItemsByDateDesc).get();
     }
 
-    public long insert(MaintenanceItem entity) throws ExecutionException, InterruptedException {
-        return AppDatabase.getDatabaseWriteExecutor().submit(() -> maintenanceDao.insert(entity)).get();
+    public void insert(MaintenanceItem entity) throws ExecutionException, InterruptedException {
+        AppDatabase.getDatabaseWriteExecutor().execute(() -> maintenanceDao.insert(entity));
     }
 
     public void delete(long id) {

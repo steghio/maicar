@@ -10,15 +10,17 @@ import com.blogspot.groglogs.maicar.model.entity.FuelItem;
 
 import java.util.List;
 
+//transaction annotation so that subsequent operations are flushed and ui refresh get the latest data from db load
 @Dao
 public interface FuelDao {
 
     @Query("SELECT * FROM fuel where id = :id")
     FuelItem findById(Long id);
 
+    //could make it return Long to get the ID of the inserted entity back
     @Transaction
     @Insert
-    long insert(FuelItem fuelItem);
+    void insert(FuelItem fuelItem);
 
     @Transaction
     @Query("DELETE FROM fuel WHERE id = :id")
@@ -32,7 +34,7 @@ public interface FuelDao {
     @Update
     void update(FuelItem fuelItem);
 
-    //todo 2 fuel in same day would be sorted by insertion time..
+    //2 fuel in same day would be sorted by insertion time
     @Transaction
     @Query("SELECT * FROM fuel ORDER BY date ASC")
     List<FuelItem> getAllItemsByDateAsc();

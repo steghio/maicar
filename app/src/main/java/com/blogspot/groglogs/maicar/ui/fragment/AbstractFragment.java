@@ -27,16 +27,23 @@ import lombok.Getter;
 
 public abstract class AbstractFragment extends Fragment {
 
+    @SuppressWarnings("rawtypes")
     @Getter
     protected static AbstractAdapter adapter;
 
     protected View buildView(LayoutInflater inflater, ViewGroup container, boolean isFuel){
-        View view = inflater.inflate(isFuel ? R.layout.fragment_fuel : R.layout.fragment_maintenance, container, false);
+        View view = inflater.inflate(isFuel ?
+                R.layout.fragment_fuel :
+                R.layout.fragment_maintenance,
+                container,
+                false);
 
         RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
 
-        adapter = isFuel ? new FuelAdapter(getActivity().getApplication(), recyclerView) : new MaintenanceAdapter(getActivity().getApplication(), recyclerView);
+        adapter = isFuel ?
+                new FuelAdapter(getActivity().getApplication(), recyclerView) :
+                new MaintenanceAdapter(getActivity().getApplication(), recyclerView);
         recyclerView.setAdapter(adapter);
 
         //divider between items in view
